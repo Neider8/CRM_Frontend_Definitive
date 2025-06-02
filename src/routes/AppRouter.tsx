@@ -20,31 +20,31 @@ import ChangeOwnPasswordPage from '../features/auth/pages/ChangeOwnPasswordPage'
 // 🏢 Módulo de Empleados
 import EmployeesListPage from '../features/employees/pages/EmployeesListPage';
 import EmployeeCreatePage from '../features/employees/pages/EmployeeCreatePage';
-import EmployeeEditPage from '../features/employees/pages/EmployeeEditPage';
+import EmployeeEditPage from '../features/employees/pages/EmployeeDetailPage';
 import EmployeeDetailPage from '../features/employees/pages/EmployeeDetailPage';
 
 // 🤝 Módulo de Clientes
 import ClientsListPage from '../features/clients/pages/ClientsListPage';
 import ClientCreatePage from '../features/clients/pages/ClientCreatePage';
-import ClientEditPage from '../features/clients/pages/ClientEditPage';
+import ClientEditPage from '../features/clients/pages/ClientDetailPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 
 // 🚚 Módulo de Proveedores
 import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
 import SupplierCreatePage from '../features/suppliers/components/SupplierCreateForm';
-import SupplierEditPage from '../features/suppliers/page/SupplierEditPage';
+import SupplierEditPage from '../features/suppliers/page/SupplierDetailPage';
 import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
 
 // 📦 Módulo de Productos
 import ProductsListPage from '../features/products/pages/ProductsListPage';
 import ProductCreatePage from '../features/products/components/ProductCreateForm';
-import ProductEditPage from '../features/products/pages/ProductEditPage';
+import ProductEditPage from '../features/products/pages/ProductDetailPage';
 import ProductDetailPage from '../features/products/pages/ProductDetailPage';
 
 // 🧪 Módulo de Insumos
 import SuppliesListPage from '../features/supplies/pages/SuppliesListPage';
 import SupplyCreatePage from '../features/supplies/components/SupplyCreateForm';
-import SupplyEditPage from '../features/supplies/pages/SupplyEditPage';
+import SupplyEditPage from '../features/supplies/pages/SupplyDetailPage';
 import SupplyDetailPage from '../features/supplies/pages/SupplyDetailPage';
 
 // 📦 Módulo de Inventario de Productos
@@ -65,95 +65,116 @@ import SalesOrderDetailPage from '../features/salesOrders/pages/SalesOrderDetail
 // 🛍️ Módulo de Órdenes de Compra
 import PurchaseOrdersListPage from '../features/purchaseOrders/pages/PurchaseOrdersListPage';
 import PurchaseOrderCreatePage from '../features/purchaseOrders/pages/PurchaseOrderCreatePage';
-import PurchaseOrderDetailPage from '../features/purchaseOrders/pages/PurchaseOrderDetailPage'; // Importar
+import PurchaseOrderDetailPage from '../features/purchaseOrders/pages/PurchaseOrderDetailPage';
+
+// ⚙️ Módulo de Órdenes de Producción
+import ProductionOrdersListPage from '../features/productionOrders/pages/ProductionOrdersListPage';
+import ProductionOrderCreatePage from '../features/productionOrders/pages/ProductionOrderCreatePage';
+import ProductionOrderDetailPage from '../features/productionOrders/pages/ProductionOrderDetailPage';
+
+// 💰 Módulo de Pagos y Cobros
+import PaymentReceiptsListPage from '../features/paymentReceipts/pages/PaymentReceiptsListPage';
+import PaymentReceiptCreatePage from '../features/paymentReceipts/pages/PaymentReceiptCreatePage';
+import PaymentReceiptDetailPage from '../features/paymentReceipts/pages/PaymentReceiptDetailPage';
 
 const AppRouter: React.FC = () => {
-  return (
-    <Routes>
-      {/* 🔓 Rutas públicas */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    return (
+        <Routes>
+            {/* 🔓 Rutas públicas */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-      {/* 🔐 Rutas protegidas bajo MainLayout + AuthGuard */}
-      <Route
-        path="/"
-        element={
-          <AuthGuard>
-            <MainLayout />
-          </AuthGuard>
-        }
-      >
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<HomePage />} />
+            {/* 🔐 Rutas protegidas bajo MainLayout + AuthGuard */}
+            <Route
+                path="/"
+                element={
+                    <AuthGuard>
+                        <MainLayout />
+                    </AuthGuard>
+                }
+            >
+                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route path="dashboard" element={<HomePage />} />
 
-        {/* ... otros módulos ... */}
+                {/* ... otros módulos ... */}
 
-        {/* 🧑‍💼 Módulo de Usuarios */}
-        <Route path="usuarios" element={<UsersListPage />} />
-        <Route path="usuarios/nuevo" element={<UserCreatePage />} />
-        <Route path="usuarios/:userId" element={<UserProfilePage />} />
-        <Route path="usuarios/:userId/editar" element={<UserEditPage />} />
-        <Route path="usuarios/:userId/cambiar-contrasena" element={<UserChangePasswordAdminPage />} />
-        <Route path="perfil/cambiar-contrasena" element={<ChangeOwnPasswordPage />} />
+                {/* 🧑‍💼 Módulo de Usuarios */}
+                <Route path="usuarios" element={<UsersListPage />} />
+                <Route path="usuarios/nuevo" element={<UserCreatePage />} />
+                <Route path="usuarios/:userId" element={<UserProfilePage />} />
+                <Route path="usuarios/:userId/editar" element={<UserEditPage />} />
+                <Route path="usuarios/:userId/cambiar-contrasena" element={<UserChangePasswordAdminPage />} />
+                <Route path="perfil/cambiar-contrasena" element={<ChangeOwnPasswordPage />} />
 
-        {/* 🏢 Módulo de Empleados */}
-        <Route path="empleados" element={<EmployeesListPage />} />
-        <Route path="empleados/nuevo" element={<EmployeeCreatePage />} />
-        <Route path="empleados/:employeeId" element={<EmployeeDetailPage />} />
-        <Route path="empleados/:employeeId/editar" element={<EmployeeEditPage />} />
+                {/* 🏢 Módulo de Empleados */}
+                <Route path="empleados" element={<EmployeesListPage />} />
+                <Route path="empleados/nuevo" element={<EmployeeCreatePage />} />
+                <Route path="empleados/:employeeId" element={<EmployeeDetailPage />} />
+                <Route path="empleados/:employeeId/editar" element={<EmployeeEditPage />} />
 
-        {/* 🤝 Módulo de Clientes */}
-        <Route path="clientes" element={<ClientsListPage />} />
-        <Route path="clientes/nuevo" element={<ClientCreatePage />} />
-        <Route path="clientes/:clientId" element={<ClientDetailPage />} />
-        <Route path="clientes/:clientId/editar" element={<ClientEditPage />} />
+                {/* 🤝 Módulo de Clientes */}
+                <Route path="clientes" element={<ClientsListPage />} />
+                <Route path="clientes/nuevo" element={<ClientCreatePage />} />
+                <Route path="clientes/:clientId" element={<ClientDetailPage />} />
+                <Route path="clientes/:clientId/editar" element={<ClientEditPage />} />
 
-        {/* 🚚 Módulo de Proveedores */}
-        <Route path="proveedores" element={<SuppliersListPage />} />
-        <Route path="proveedores/nuevo" element={<SupplierCreatePage />} />
-        <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
-        <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
+                {/* 🚚 Módulo de Proveedores */}
+                <Route path="proveedores" element={<SuppliersListPage />} />
+                <Route path="proveedores/nuevo" element={<SupplierCreatePage />} />
+                <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
+                <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
 
-        {/* 📦 Módulo de Productos */}
-        <Route path="productos" element={<ProductsListPage />} />
-        <Route path="productos/nuevo" element={<ProductCreatePage />} />
-        <Route path="productos/:productId/editar" element={<ProductEditPage />} />
-        <Route path="productos/:productId" element={<ProductDetailPage />} />
+                {/* 📦 Módulo de Productos */}
+                <Route path="productos" element={<ProductsListPage />} />
+                <Route path="productos/nuevo" element={<ProductCreatePage />} />
+                <Route path="productos/:productId/editar" element={<ProductEditPage />} />
+                <Route path="productos/:productId" element={<ProductDetailPage />} />
 
-        {/* 🧪 Módulo de Insumos */}
-        <Route path="insumos" element={<SuppliesListPage />} />
-        <Route path="insumos/nuevo" element={<SupplyCreatePage />} />
-        <Route path="insumos/:supplyId" element={<SupplyDetailPage />} />
-        <Route path="insumos/:supplyId/editar" element={<SupplyEditPage />} />
+                {/* 🧪 Módulo de Insumos */}
+                <Route path="insumos" element={<SuppliesListPage />} />
+                <Route path="insumos/nuevo" element={<SupplyCreatePage />} />
+                <Route path="insumos/:supplyId" element={<SupplyDetailPage />} />
+                <Route path="insumos/:supplyId/editar" element={<SupplyDetailPage />} />
 
-        {/* 📦 Módulo de Inventario de Productos */}
-        <Route path="inventario-productos" element={<ProductInventoryListPage />} />
-        <Route path="inventario-productos/nuevo" element={<ProductInventoryCreatePage />} />
-        <Route path="inventario-productos/:inventoryId" element={<ProductInventoryDetailPage />} />
+                {/* 📦 Módulo de Inventario de Productos */}
+                <Route path="inventario-productos" element={<ProductInventoryListPage />} />
+                <Route path="inventario-productos/nuevo" element={<ProductInventoryCreatePage />} />
+                <Route path="inventario-productos/:inventoryId" element={<ProductInventoryDetailPage />} />
 
-        {/* 🧪 Módulo de Inventario de Insumos */}
-        <Route path="inventario-insumos" element={<SupplyInventoryListPage />} />
-        <Route path="inventario-insumos/nuevo" element={<SupplyInventoryCreatePage />} />
-        <Route path="inventario-insumos/:inventoryId" element={<SupplyInventoryDetailPage />} />
+                {/* 🧪 Módulo de Inventario de Insumos */}
+                <Route path="inventario-insumos" element={<SupplyInventoryListPage />} />
+                <Route path="inventario-insumos/nuevo" element={<SupplyInventoryCreatePage />} />
+                <Route path="inventario-insumos/:inventoryId" element={<SupplyInventoryDetailPage />} />
 
-        {/* 🛒 Módulo de Órdenes de Venta */}
-        <Route path="ordenes-venta" element={<SalesOrdersListPage />} />
-        <Route path="ordenes-venta/nuevo" element={<SalesOrderCreatePage />} />
-        <Route path="ordenes-venta/:orderId" element={<SalesOrderDetailPage />} />
+                {/* 🛒 Módulo de Órdenes de Venta */}
+                <Route path="ordenes-venta" element={<SalesOrdersListPage />} />
+                <Route path="ordenes-venta/nuevo" element={<SalesOrderCreatePage />} />
+                <Route path="ordenes-venta/:orderId" element={<SalesOrderDetailPage />} />
 
-        {/* 🛍️ Módulo de Órdenes de Compra */}
-        <Route path="ordenes-compra" element={<PurchaseOrdersListPage />} />
-        <Route path="ordenes-compra/nuevo" element={<PurchaseOrderCreatePage />} />
-        <Route path="ordenes-compra/:orderId" element={<PurchaseOrderDetailPage />} /> {/* Nueva Ruta */}
-        {/* <Route path="ordenes-compra/:orderId/editar-cabecera" element={<div>Editar Cabecera Orden Compra Page</div>} /> */}
-        {/* <Route path="ordenes-compra/:orderId/detalles/nuevo" element={<div>Añadir Detalle a Orden Compra Page/Modal</div>} /> */}
-        {/* <Route path="ordenes-compra/:orderId/detalles/:detailId/editar" element={<div>Editar Detalle de Orden Compra Page/Modal</div>} /> */}
-        
-        {/* Aquí puedes agregar más rutas futuras */}
-      </Route>
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  );
+                {/* 🛍️ Módulo de Órdenes de Compra */}
+                <Route path="ordenes-compra" element={<PurchaseOrdersListPage />} />
+                <Route path="ordenes-compra/nuevo" element={<PurchaseOrderCreatePage />} />
+                <Route path="ordenes-compra/:orderId" element={<PurchaseOrderDetailPage />} />
+
+                {/* ⚙️ Módulo de Órdenes de Producción */}
+                <Route path="ordenes-produccion" element={<ProductionOrdersListPage />} />
+                <Route path="ordenes-produccion/nuevo" element={<ProductionOrderCreatePage />} />
+                <Route path="ordenes-produccion/:orderId" element={<ProductionOrderDetailPage />} />
+                {/* <Route path="ordenes-produccion/:orderId/editar-cabecera" element={<div>Editar Cabecera Orden Producción Page</div>} /> */}
+                {/* <Route path="ordenes-produccion/:orderId/tareas/nuevo" element={...} /> */}
+                {/* <Route path="ordenes-produccion/:orderId/tareas/:taskId/editar" element={...} /> */}
+
+                {/* 💰 Módulo de Pagos y Cobros */}
+                <Route path="pagos-cobros" element={<PaymentReceiptsListPage />} />
+                <Route path="pagos-cobros/nuevo" element={<PaymentReceiptCreatePage />} />
+                <Route path="pagos-cobros/:transactionId" element={<PaymentReceiptDetailPage />} />
+                {/* <Route path="pagos-cobros/:transactionId/editar" element={<div>Editar Pago/Cobro Page</div>} /> */}
+
+                {/* Aquí puedes agregar más rutas futuras */}
+            </Route>
+            <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+    );
 };
 
 export default AppRouter;

@@ -51,13 +51,15 @@ export interface PurchaseOrderDetails {
 }
 
 // Basado en OrdenCompraSummaryDTO (si lo tuviéramos, de momento usamos PurchaseOrderDetails)
-// export interface PurchaseOrderSummary {
-//   idOrdenCompra: number;
-//   fechaPedidoCompra: string;
-//   proveedorNombre: string;
-//   estadoCompra?: string;
-//   totalCompra?: number;
-// }
+ export interface PurchaseOrderSummary {
+   idOrdenCompra: number;
+   fechaPedidoCompra: string;
+   proveedorNombre: string;
+   estadoCompra?: string;
+   totalCompra?: number;
+   fechaEntregaEstimadaCompra?: string | null;
+   fechaEntregaRealCompra?: string | null;
+   observacionesCompra?: string | null;}
 
 export type PaginatedPurchaseOrders = Page<PurchaseOrderDetails>;
 export type PurchaseOrderPageableRequest = PageableRequest;
