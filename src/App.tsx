@@ -1,4 +1,4 @@
-import React from 'react';
+
 import AppRouter from './routes/AppRouter';
 import { useAuth } from './contexts/AuthContext';
 import { Box, CircularProgress, Typography } from '@mui/material';

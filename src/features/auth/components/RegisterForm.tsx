@@ -10,20 +10,23 @@ import {
   CircularProgress,
   Alert,
   Typography,
-  MenuItem
+  MenuItem,
+  IconButton, // <-- Importar IconButton
+  InputAdornment // <-- Importar InputAdornment
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material'; // <-- Importar Iconos
 import type { RegisterPayload } from '../../../types/auth.types';
 import { registerUser } from '../../../api/authService';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-// 1. Esquema Yup
+// 1. Esquema Yup (sin cambios)
 const registerSchema = yup.object({
   idEmpleado: yup
     .number()
     .nullable()
     .transform((value, originalValue) => originalValue === '' ? null : value)
     .typeError('ID de empleado debe ser un número')
-    .default(null), // <-- Esto ayuda a que siempre exista la propiedad
+    .default(null),
   nombreUsuario: yup
     .string()
     .required('El nombre de usuario es requerido.')
@@ -43,7 +46,7 @@ const registerSchema = yup.object({
     .oneOf(['Administrador', 'Gerente', 'Operario', 'Ventas'], 'Rol inválido.'),
 }).required();
 
-// 2. Inferir tipo directamente de Yup
+// 2. Inferir tipo directamente de Yup (sin cambios)
 type RegisterFormInputs = yup.InferType<typeof registerSchema>;
 
 const RegisterForm: React.FC = () => {
@@ -51,6 +54,10 @@ const RegisterForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  // Estados para la visibilidad de las contraseñas
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -101,6 +108,13 @@ const RegisterForm: React.FC = () => {
 
   const roles = ['Administrador', 'Gerente', 'Operario', 'Ventas'];
 
+  // Handlers para cambiar la visibilidad
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -134,26 +148,56 @@ const RegisterForm: React.FC = () => {
         required
         fullWidth
         label="Contraseña"
-        type="password"
+        type={showPassword ? 'text' : 'password'} // <-- Cambia el tipo dinámicamente
         id="contrasena"
         autoComplete="new-password"
         {...register('contrasena')}
         error={!!errors.contrasena}
         helperText={errors.contrasena?.message}
         disabled={loading}
+        InputProps={{ // <-- Añade InputProps
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle password visibility"
+                onClick={handleClickShowPassword}
+                onMouseDown={handleMouseDownPassword}
+                edge="end"
+                disabled={loading}
+              >
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
       <TextField
         margin="normal"
         required
         fullWidth
         label="Confirmar Contraseña"
-        type="password"
+        type={showConfirmPassword ? 'text' : 'password'} // <-- Cambia el tipo dinámicamente
         id="confirmarContrasena"
         autoComplete="new-password"
         {...register('confirmarContrasena')}
         error={!!errors.confirmarContrasena}
         helperText={errors.confirmarContrasena?.message}
         disabled={loading}
+        InputProps={{ // <-- Añade InputProps
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="toggle confirm password visibility"
+                onClick={handleClickShowConfirmPassword}
+                onMouseDown={handleMouseDownPassword}
+                edge="end"
+                disabled={loading}
+              >
+                {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
       <TextField
         margin="normal"
@@ -163,6 +207,7 @@ const RegisterForm: React.FC = () => {
         select
         label="Rol de Usuario"
         {...register('rolUsuario')}
+        defaultValue="Ventas" // Asegúrate que el default value en useForm y aquí coincidan si es necesario
         error={!!errors.rolUsuario}
         helperText={errors.rolUsuario?.message}
         disabled={loading}
