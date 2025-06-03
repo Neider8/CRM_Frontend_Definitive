@@ -1,5 +1,4 @@
 // src/types/employee.types.ts
-// import type { UsuarioSummary } from './auth.types'; // Reutilizamos UsuarioSummary si es necesario para el usuario asociado
 import type { Page, PageableRequest } from './page.types';
 
 // Basado en EmpleadoCreateRequestDTO del backend
@@ -23,6 +22,13 @@ export interface EmployeeUpdateRequest {
   // tipoDocumento y numeroDocumento no se actualizan según el DTO
 }
 
+// Resumen de empleado para usar en otras entidades (como tareas de producción)
+export interface EmpleadoSummary {
+  idEmpleado: number;
+  nombreEmpleado: string;
+  cargoEmpleado?: string | null;
+}
+
 // Basado en EmpleadoResponseDTO del backend
 export interface EmployeeDetails {
   idEmpleado: number;
@@ -35,7 +41,6 @@ export interface EmployeeDetails {
   fechaContratacionEmpleado?: string | null; // LocalDate se mapea a string YYYY-MM-DD
   fechaCreacion: string; // LocalDateTime se mapea a string ISO
   fechaActualizacion?: string | null; // LocalDateTime se mapea a string ISO
-  // usuario?: UsuarioSummary | null; // Usamos el UsuarioSummaryDTO que ya teníamos
   usuario?: {
     idUsuario: number;
     nombreUsuario: string;

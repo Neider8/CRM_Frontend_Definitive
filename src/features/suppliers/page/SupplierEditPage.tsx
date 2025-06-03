@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Box, CircularProgress, Alert, IconButton, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useParams, useNavigate } from 'react-router-dom';
-import SupplierEditForm from '../components/SupplierEditForm';
+import SupplierEditForm from '../components/SupplierEditForm'; // Asegúrate que este componente espere 'supplyData'
 import { getSupplierById } from '../../../api/supplierService';
 import type { SupplierDetails } from '../../../types/supplier.types';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -45,16 +45,16 @@ const SupplierEditPage: React.FC = () => {
   const canEdit = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
 
   if (!canEdit) {
-     return (
-        <Container maxWidth="md">
-            <Box sx={{ my: 4, textAlign: 'center' }}>
-                <Typography variant="h5" color="error">Acceso Denegado</Typography>
-                <Typography>No tienes permisos para editar proveedores.</Typography>
-                 <Button variant="outlined" onClick={() => navigate(-1)} sx={{mt: 2}}>
-                    Volver
-                </Button>
-            </Box>
-        </Container>
+    return (
+      <Container maxWidth="md">
+        <Box sx={{ my: 4, textAlign: 'center' }}>
+          <Typography variant="h5" color="error">Acceso Denegado</Typography>
+          <Typography>No tienes permisos para editar proveedores.</Typography>
+          <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mt: 2 }}>
+            Volver
+          </Button>
+        </Box>
+      </Container>
     );
   }
 
@@ -89,7 +89,8 @@ const SupplierEditPage: React.FC = () => {
           Editar Proveedor
         </Typography>
       </Box>
-      <SupplierEditForm supplierData={supplierData} />
+      {/* AQUÍ LA CORRECCIÓN */}
+      <SupplierEditForm supplyData={supplierData} />
     </Container>
   );
 };
