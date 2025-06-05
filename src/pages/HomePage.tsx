@@ -10,46 +10,43 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import PeopleIcon from '@mui/icons-material/People';
+import CategoryIcon from '@mui/icons-material/Category';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import PersonIcon from '@mui/icons-material/Person';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
 import { Link as RouterLink } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Ajusta la ruta si es diferente
+import { useAuth } from '../contexts/AuthContext';
 
-// Importar el nuevo componente de gráfico
-import SampleBarChart from '../features/dashboard/components/SampleBarChart'; // Ajusta la ruta si es diferente
-
-interface DashboardStats {
-  activeSalesOrders: number;
-  productionOrdersInProgress: number;
-  pendingPurchaseOrders: number;
-  lowStockProducts: number;
-}
+import StockAlertsDisplay from '../components/stock/StockAlertsDisplay';
+import SampleBarChart from '../features/dashboard/components/SampleBarChart';
+import { getDashboardSummaryStats } from '../services/dashboardService';
+import { formatCurrency } from '../utils/formatting';
+import type { DashboardSummaryStats } from '../types/dashboard.types';
 
 const HomePage: React.FC = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<DashboardSummaryStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [errorStats, setErrorStats] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      setLoading(true);
-      setError(null);
+      setLoadingStats(true);
+      setErrorStats(null);
       try {
-        await new Promise(resolve => setTimeout(resolve, 700));
-        setStats({
-          activeSalesOrders: 12,
-          productionOrdersInProgress: 5,
-          pendingPurchaseOrders: 3,
-          lowStockProducts: 7,
-        });
+        const fetchedStats = await getDashboardSummaryStats();
+        setStats(fetchedStats);
       } catch (err: unknown) {
         console.error("Error cargando datos del dashboard:", err);
         if (err instanceof Error) {
-          setError(err.message || "No se pudieron cargar los datos del dashboard.");
+          setErrorStats(err.message || "No se pudieron cargar los datos del dashboard.");
         } else {
-          setError("No se pudieron cargar los datos del dashboard.");
+          setErrorStats("No se pudieron cargar los datos del dashboard.");
         }
       } finally {
-        setLoading(false);
+        setLoadingStats(false);
       }
     };
     fetchDashboardData();
@@ -67,62 +64,118 @@ const HomePage: React.FC = () => {
     </Button>
   );
 
-  const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactElement; color?: string; linkTo?: string; linkText?: string }> = ({ title, value, icon, color = 'text.primary', linkTo, linkText }) => (
+  const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactElement; color?: string; linkTo?: string; linkText?: string }> = ({ title, value, icon, color = 'primary.main', linkTo, linkText }) => (
     <Paper elevation={3} sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100%', minHeight:180, justifyContent:'space-between', mb: 2 }}>
         <Box sx={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
             <Typography variant="subtitle1" color="text.secondary">{title}</Typography>
             <Avatar sx={{ bgcolor: color, width: 40, height: 40 }}>{icon}</Avatar>
         </Box>
         <Typography variant="h3" component="p" sx={{ my: 2, fontWeight: 'bold' }}>
-            {loading && !stats ? <CircularProgress size={30} /> : value}
+            {loadingStats && !stats ? <CircularProgress size={30} /> : value}
         </Typography>
         {linkTo && linkText && <Button component={RouterLink} to={linkTo} size="small" sx={{alignSelf:'flex-start'}}> {linkText} </Button>}
     </Paper>
   );
 
-  if (error) {
-    return <Container><Alert severity="error" sx={{ mt: 2 }}>{error}</Alert></Container>;
-  }
+  // Componente interno para mostrar las estadísticas del dashboard
+  const DashboardStatsDisplay: React.FC = () => {
+    if (loadingStats) {
+      return (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+          <CircularProgress size={24} sx={{ mr: 1 }} />
+          <Typography variant="body1" color="text.secondary">Cargando estadísticas...</Typography>
+        </Box>
+      );
+    }
+
+    if (errorStats) {
+      return (
+        <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
+          <ErrorOutlineIcon fontSize="inherit" sx={{ mr: 1 }} />
+          <Typography variant="body1" component="span" sx={{ fontWeight: 'bold' }}>Error al cargar estadísticas: </Typography>
+          <Typography variant="body2" component="span">{errorStats}</Typography>
+        </Alert>
+      );
+    }
+
+    if (!stats) {
+      return null;
+    }
+
+    // Sin Grid: usar flexbox para las tarjetas
+    return (
+      <Box sx={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 2,
+        mb: 4,
+        justifyContent: { xs: 'center', sm: 'flex-start' }
+      }}>
+        <Box sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 300 }}>
+          <StatCard title="Clientes Totales" value={stats.totalClients} icon={<PeopleIcon />} color="primary.main" linkTo="/clients" linkText="Ver Clientes"/>
+        </Box>
+        <Box sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 300 }}>
+          <StatCard title="Productos Totales" value={stats.totalProducts} icon={<CategoryIcon />} color="success.main" linkTo="/products" linkText="Ver Productos"/>
+        </Box>
+        <Box sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 300 }}>
+          <StatCard title="Ventas este Mes" value={stats.totalSalesThisMonth} icon={<ShoppingCartIcon />} color="info.main" linkTo="/sales-orders" linkText="Ver Ventas"/>
+        </Box>
+        <Box sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 300 }}>
+          <StatCard title="Producción Pendiente" value={stats.totalProductionOrdersPending} icon={<PrecisionManufacturingIcon />} color="warning.main" linkTo="/production-orders" linkText="Ver Producción"/>
+        </Box>
+        <Box sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 300 }}>
+          <StatCard title="Ventas Recientes" value={formatCurrency(stats.recentSalesValue)} icon={<ShoppingCartIcon />} color="secondary.main" linkTo="/sales-orders" linkText="Ver Ventas"/>
+        </Box>
+      </Box>
+    );
+  };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 2, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 2, mb: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
         <SpeedIcon color="primary" sx={{ fontSize: '2.5rem', mr: 1 }} />
-        <Typography variant="h4" component="h1">
-          {/* AQUÍ LA CORRECCIÓN */}
-          Dashboard {user ? ` - Bienvenido, ${user.nombreUsuario}` : ''}
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+          Dashboard {user ? `- Bienvenido, ${user.nombreUsuario}` : ''}
         </Typography>
       </Box>
 
-      {/* Stat Cards */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 3 }}>
-        <Box sx={{ flex: '1 1 220px', minWidth: 220 }}>
-          <StatCard title="Órdenes de Venta Activas" value={stats?.activeSalesOrders ?? '--'} icon={<ShoppingCartIcon />} color="primary.main" linkTo="/ordenes-venta" linkText="Ver Órdenes"/>
-        </Box>
-        <Box sx={{ flex: '1 1 220px', minWidth: 220 }}>
-          <StatCard title="O. Producción en Curso" value={stats?.productionOrdersInProgress ?? '--'} icon={<PrecisionManufacturingIcon />} color="secondary.main" linkTo="/ordenes-produccion" linkText="Ver Órdenes"/>
-        </Box>
-        <Box sx={{ flex: '1 1 220px', minWidth: 220 }}>
-          <StatCard title="Órdenes de Compra Pend." value={stats?.pendingPurchaseOrders ?? '--'} icon={<ShoppingBasketIcon />} color="info.main" linkTo="/ordenes-compra" linkText="Ver Órdenes"/>
-        </Box>
-        <Box sx={{ flex: '1 1 220px', minWidth: 220 }}>
-          <StatCard title="Productos Bajo Stock" value={stats?.lowStockProducts ?? '--'} icon={<InventoryIcon />} color="warning.main" linkTo="/inventario-productos" linkText="Ver Inventario"/>
-        </Box>
+      {/* Sección de Alertas de Stock */}
+      <Box sx={{ mb: 4 }}>
+        <StockAlertsDisplay />
       </Box>
 
-      {/* Quick Access and Chart */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-        <Paper elevation={3} sx={{ p: 2, flex: '1 1 300px', mb: { xs: 2, md: 0 } }}>
-          <Typography variant="h6" gutterBottom>Accesos Rápidos</Typography>
-          <Divider sx={{mb:1}}/>
-          <QuickAccessButton to="/ordenes-venta/nuevo" icon={<AddCircleOutlineIcon />} text="Nueva Orden de Venta" />
-          <QuickAccessButton to="/clientes/nuevo" icon={<AddCircleOutlineIcon />} text="Nuevo Cliente" />
-          <QuickAccessButton to="/productos/nuevo" icon={<AddCircleOutlineIcon />} text="Nuevo Producto" />
-          <QuickAccessButton to="/insumos/nuevo" icon={<AddCircleOutlineIcon />} text="Nuevo Insumo" />
-          <QuickAccessButton to="/proveedores/nuevo" icon={<AddCircleOutlineIcon />} text="Nuevo Proveedor" />
-        </Paper>
-        <Box sx={{ flex: '2 1 500px', minWidth: 300 }}>
-          <SampleBarChart />
+      {/* Sección de Estadísticas Clave */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>📊 Estadísticas Clave</Typography>
+        <DashboardStatsDisplay />
+      </Box>
+
+      {/* Quick Access and Chart sin Grid */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: 3
+      }}>
+        <Box sx={{ flex: '1 1 320px', minWidth: 280 }}>
+          <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Accesos Rápidos</Typography>
+            <Divider sx={{mb:2}}/>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <QuickAccessButton to="/sales-orders/new" icon={<AddCircleOutlineIcon />} text="Nueva Orden de Venta" />
+              <QuickAccessButton to="/clients/new" icon={<AddCircleOutlineIcon />} text="Nuevo Cliente" />
+              <QuickAccessButton to="/products/new" icon={<AddCircleOutlineIcon />} text="Nuevo Producto" />
+              <QuickAccessButton to="/supplies/new" icon={<AddCircleOutlineIcon />} text="Nuevo Insumo" />
+              <QuickAccessButton to="/suppliers/new" icon={<AddCircleOutlineIcon />} text="Nuevo Proveedor" />
+            </Box>
+          </Paper>
+        </Box>
+        <Box sx={{ flex: '2 1 500px', minWidth: 320 }}>
+          <Paper elevation={3} sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>Gráfico de Ventas (Ejemplo)</Typography>
+            <Box sx={{ flexGrow: 1, minHeight: 300 }}>
+              <SampleBarChart />
+            </Box>
+          </Paper>
         </Box>
       </Box>
     </Container>

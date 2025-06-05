@@ -1,126 +1,58 @@
 // src/components/layout/Header.tsx
-import React from 'react';
-import {AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar, Tooltip, Menu, MenuItem, ListItemIcon, Divider, } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-interface HeaderProps {
-  onDrawerToggle?: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
+const Header: React.FC<{ onDrawerToggle?: () => void }> = ({ onDrawerToggle }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
-    handleCloseUserMenu();
+    setMenuOpen(false);
     navigate('/login');
   };
 
   const handleProfile = () => {
-    handleCloseUserMenu();
-    if (user && user.idUsuario) {
-      navigate(`/usuarios/${user.idUsuario}`); // ✅ Ruta al perfil del usuario
+    setMenuOpen(false);
+    if (user?.idUsuario) {
+      navigate(`/usuarios/${user.idUsuario}`);
     } else {
-      console.warn('No se pudo navegar al perfil: usuario o ID de usuario no disponible.');
-      navigate('/login'); // Opcional: redirigir a login como fallback
+      navigate('/login');
     }
   };
 
   return (
-    <AppBar
-      position="fixed"
-      sx={{
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}
-    >
-      <Toolbar>
-        <IconButton
-          color="inherit"
-          aria-label="open drawer"
-          edge="start"
-          onClick={onDrawerToggle}
-          sx={{ mr: 2, display: { sm: 'none' } }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography
-          variant="h6"
-          noWrap
-          component={RouterLink}
-          to="/dashboard"
-          sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}
-        >
-          CRMTech360
-        </Typography>
+    <header className="header">
+      <button className="menu-button" onClick={onDrawerToggle}>
+        ☰
+      </button>
 
-        {user ? (
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Abrir opciones de usuario">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: 'secondary.main' }}>
-                  {user.nombreUsuario
-                    ? user.nombreUsuario.charAt(0).toUpperCase()
-                    : <AccountCircleIcon />}
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem onClick={handleProfile}>
-                <ListItemIcon>
-                  <AccountCircleIcon fontSize="small" />
-                </ListItemIcon>
-                <Typography textAlign="center">Perfil ({user.nombreUsuario})</Typography>
-              </MenuItem>
-              <MenuItem disabled>
-                <Typography textAlign="center" variant="caption" sx={{ px: 1 }}>
-                  Rol: {user.rolUsuario}
-                </Typography>
-              </MenuItem>
-              <Divider />
-              <MenuItem onClick={handleLogout}>
-                <ListItemIcon>
-                  <ExitToAppIcon fontSize="small" />
-                </ListItemIcon>
-                <Typography textAlign="center">Cerrar Sesión</Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-        ) : (
-          <Button color="inherit" component={RouterLink} to="/login">
-            Iniciar Sesión
-          </Button>
-        )}
-      </Toolbar>
-    </AppBar>
+      <RouterLink to="/dashboard" className="logo">
+        CRMTech360
+      </RouterLink>
+
+      {user ? (
+        <div className="user-menu">
+          <button className="avatar-button" onClick={() => setMenuOpen(!menuOpen)}>
+            {user.nombreUsuario?.charAt(0).toUpperCase() || '👤'}
+          </button>
+
+          {menuOpen && (
+            <ul className="dropdown-menu">
+              <li onClick={handleProfile}>👤 Perfil</li>
+              <li className="disabled">Rol: {user.rolUsuario}</li>
+              <li onClick={handleLogout}>🚪 Cerrar sesión</li>
+            </ul>
+          )}
+        </div>
+      ) : (
+        <RouterLink to="/login" className="login-button">
+          Iniciar sesión
+        </RouterLink>
+      )}
+    </header>
   );
 };
 

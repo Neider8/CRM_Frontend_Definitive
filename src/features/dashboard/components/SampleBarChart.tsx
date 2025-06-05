@@ -2,7 +2,7 @@
 import React from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 
-// Datos de ejemplo para el gráfico (puedes reemplazarlos con datos reales)
+
 const sampleData = [
   { name: 'Ene', value: 400 },
   { name: 'Feb', value: 300 },
@@ -10,13 +10,14 @@ const sampleData = [
   { name: 'Abr', value: 800 },
   { name: 'May', value: 500 },
   { name: 'Jun', value: 700 },
+  { name: 'Jul', value: 0 },
 ];
 
 const SampleBarChart: React.FC = () => {
   return (
     <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
       <Typography variant="h6" gutterBottom>
-        Ventas Mensuales (Ejemplo)
+        Ventas Mensuales
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'flex-end', height: 'calc(100% - 40px)', borderBottom: '1px solid #ccc', borderLeft: '1px solid #ccc', p:1 }}>
         {sampleData.map((dataPoint) => (
@@ -46,7 +47,7 @@ const SampleBarChart: React.FC = () => {
         ))}
       </Box>
        <Typography variant="caption" display="block" sx={{mt: 2, textAlign: 'center'}}>
-        Este es un gráfico de barras de ejemplo. Implementa tu librería de gráficos preferida aquí.
+        Este es un gráfico de barras
       </Typography>
     </Paper>
   );
