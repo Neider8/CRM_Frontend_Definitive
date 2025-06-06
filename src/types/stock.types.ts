@@ -1,22 +1,21 @@
 /**
- * Representa la estructura de una alerta de stock que se recibe del backend.
- * Coincide con el StockAlertDTO de Java.
+ * Define la estructura de una alerta de stock como llega desde el API del backend.
  */
 export interface StockAlert {
   idAlerta: number;
   tipoItem: 'Insumo' | 'Producto';
   idItem: number;
+  nombreItem: string;
   mensaje: string;
   nivelActual: number;
   umbralConfigurado: number;
-  fechaCreacion: string;
+  fechaCreacion: string; // La fecha llega como un string en formato ISO.
   estadoAlerta: 'Nueva' | 'Vista' | 'Resuelta';
 }
 
 /**
- * Representa el payload para actualizar el umbral de stock.
- * Coincide con el UpdateStockThresholdDTO de Java.
+ * Define el payload para la solicitud de actualización del umbral de stock.
  */
 export interface UpdateStockThresholdPayload {
-  nuevoUmbral: number; // Corresponde a BigDecimal en Java
+  nuevoUmbral: number;
 }
