@@ -1,13 +1,11 @@
-// src/types/page.types.ts
-
-// Para los parámetros de solicitud de paginación
+// Define la estructura de una solicitud de paginación que se envía al backend
 export interface PageableRequest {
-  page?: number; // Número de página (basado en 0)
-  size?: number; // Tamaño de la página
-  sort?: string; // Campo por el que ordenar, seguido de ,asc o ,desc (ej: "nombreUsuario,asc")
+  page?: number;
+  size?: number;
+  sort?: string | string[];
 }
 
-// Estructura de la respuesta de paginación de Spring Data JPA
+// Define la estructura de una respuesta paginada que se recibe del backend de Spring
 export interface Page<T> {
   content: T[];
   pageable: {
@@ -22,17 +20,17 @@ export interface Page<T> {
     paged: boolean;
     unpaged: boolean;
   };
-  last: boolean;
   totalPages: number;
   totalElements: number;
+  last: boolean;
   size: number;
-  number: number; // Número de la página actual (basado en 0)
+  number: number;
   sort: {
     sorted: boolean;
     unsorted: boolean;
     empty: boolean;
   };
+  numberOfElements: number;
   first: boolean;
-  numberOfElements: number; // Número de elementos en la página actual
   empty: boolean;
 }

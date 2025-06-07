@@ -45,7 +45,7 @@ import ProductDetailPage from '../features/products/pages/ProductDetailPage';
 // 🧪 Módulo de Insumos
 import SuppliesListPage from '../features/supplies/pages/SuppliesListPage';
 import SupplyCreatePage from '../features/supplies/components/SupplyCreateForm';
-import SupplyEditPage from '../features/supplies/pages/SupplyDetailPage';
+import SupplyEditPage from '../features/supplies/pages/SupplyEditPage';
 import SupplyDetailPage from '../features/supplies/pages/SupplyDetailPage';
 
 // 📦 Módulo de Inventario de Productos
