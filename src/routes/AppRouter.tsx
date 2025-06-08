@@ -3,8 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import MainLayout from '../components/layout/MainLayout';
-// import HomePage from '../pages/HomePage'; // Eliminar este import
-import DashboardPage from '../pages/HomePage'; // Nuevo import
+import DashboardPage from '../pages/HomePage';
 import LoginPage from '../features/auth/pages/LoginPage';
 import RegisterPage from '../features/auth/pages/RegisterPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -21,31 +20,31 @@ import ChangeOwnPasswordPage from '../features/auth/pages/ChangeOwnPasswordPage'
 // 🏢 Módulo de Empleados
 import EmployeesListPage from '../features/employees/pages/EmployeesListPage';
 import EmployeeCreatePage from '../features/employees/pages/EmployeeCreatePage';
-import EmployeeEditPage from '../features/employees/pages/EmployeeDetailPage';
+import EmployeeEditPage from '../features/employees/pages/EmployeeEditPage';
 import EmployeeDetailPage from '../features/employees/pages/EmployeeDetailPage';
 
 // 🤝 Módulo de Clientes
 import ClientsListPage from '../features/clients/pages/ClientsListPage';
 import ClientCreatePage from '../features/clients/pages/ClientCreatePage';
-import ClientEditPage from '../features/clients/pages/ClientDetailPage';
+import ClientEditPage from '../features/clients/pages/ClientEditPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 
 // 🚚 Módulo de Proveedores
 import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
 import SupplierCreatePage from '../features/suppliers/components/SupplierCreateForm';
-import SupplierEditPage from '../features/suppliers/page/SupplierDetailPage';
+import SupplierEditPage from '../features/suppliers/page/SupplierEditPage'; // <--- ESTA IMPORTACIÓN ES CLAVE
 import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
 
 // 📦 Módulo de Productos
 import ProductsListPage from '../features/products/pages/ProductsListPage';
 import ProductCreatePage from '../features/products/components/ProductCreateForm';
-import ProductEditPage from '../features/products/pages/ProductDetailPage';
+import ProductEditPage from '../features/products/pages/ProductEditPage';
 import ProductDetailPage from '../features/products/pages/ProductDetailPage';
 
 // 🧪 Módulo de Insumos
 import SuppliesListPage from '../features/supplies/pages/SuppliesListPage';
 import SupplyCreatePage from '../features/supplies/components/SupplyCreateForm';
-import SupplyEditPage from '../features/supplies/pages/SupplyDetailPage';
+import SupplyEditPage from '../features/supplies/pages/SupplyEditPage';
 import SupplyDetailPage from '../features/supplies/pages/SupplyDetailPage';
 
 // 📦 Módulo de Inventario de Productos
@@ -103,8 +102,6 @@ const AppRouter: React.FC = () => {
                 <Route index element={<Navigate to="/dashboard" replace />} />
                 <Route path="dashboard" element={<DashboardPage />} />
 
-                {/* ... otros módulos ... */}
-
                 {/* 🧑‍💼 Módulo de Usuarios */}
                 <Route path="usuarios" element={<UsersListPage />} />
                 <Route path="usuarios/nuevo" element={<UserCreatePage />} />
@@ -128,7 +125,7 @@ const AppRouter: React.FC = () => {
                 {/* 🚚 Módulo de Proveedores */}
                 <Route path="proveedores" element={<SuppliersListPage />} />
                 <Route path="proveedores/nuevo" element={<SupplierCreatePage />} />
-                <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
+                <Route path="proveedores/:suppliersId/editar" element={<SupplierEditPage />} /> {/* <--- ESTA RUTA ES CLAVE */}
                 <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
 
                 {/* 📦 Módulo de Productos */}
@@ -141,7 +138,7 @@ const AppRouter: React.FC = () => {
                 <Route path="insumos" element={<SuppliesListPage />} />
                 <Route path="insumos/nuevo" element={<SupplyCreatePage />} />
                 <Route path="insumos/:supplyId" element={<SupplyDetailPage />} />
-                <Route path="insumos/:supplyId/editar" element={<SupplyDetailPage />} />
+                <Route path="insumos/:supplyId/editar" element={<SupplyEditPage />} />
 
                 {/* 📦 Módulo de Inventario de Productos */}
                 <Route path="inventario-productos" element={<ProductInventoryListPage />} />
