@@ -32,7 +32,7 @@ import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 // 🚚 Módulo de Proveedores
 import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
 import SupplierCreatePage from '../features/suppliers/components/SupplierCreateForm';
-import SupplierEditPage from '../features/suppliers/page/SupplierEditPage'; // <--- ESTA IMPORTACIÓN ES CLAVE
+import SupplierEditPage from '../features/suppliers/page/SupplierEditPage';
 import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
 
 // 📦 Módulo de Productos
@@ -125,7 +125,8 @@ const AppRouter: React.FC = () => {
                 {/* 🚚 Módulo de Proveedores */}
                 <Route path="proveedores" element={<SuppliersListPage />} />
                 <Route path="proveedores/nuevo" element={<SupplierCreatePage />} />
-                <Route path="proveedores/:suppliersId/editar" element={<SupplierEditPage />} /> {/* <--- ESTA RUTA ES CLAVE */}
+                {/* Se unificó la ruta para usar ':supplierId' como en la rama daniel, que es más estándar */}
+                <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
                 <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
 
                 {/* 📦 Módulo de Productos */}

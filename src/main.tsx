@@ -7,8 +7,14 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
 
-import { AuthProvider } from './contexts/AuthContext'; // Asegúrate de tener este archivo creado
+import { AuthProvider } from './contexts/AuthContext';
 import { BrowserRouter as Router } from 'react-router-dom';
+
+// --- NUEVAS IMPORTACIONES PARA REACT-QUERY ---
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// --- CREAR UNA INSTANCIA DE QueryClient ---
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -16,7 +22,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <CssBaseline />
       <Router>
         <AuthProvider>
-          <App />
+          {/* --- ENVOLVER LA APP CON QueryClientProvider --- */}
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
         </AuthProvider>
       </Router>
     </ThemeProvider>
