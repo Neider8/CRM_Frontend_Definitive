@@ -2,7 +2,6 @@
 import React from 'react';
 import { Paper, Typography, Box } from '@mui/material';
 
-
 const sampleData = [
   { name: 'Ene', value: 400 },
   { name: 'Feb', value: 300 },

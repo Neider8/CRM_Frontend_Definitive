@@ -3,8 +3,6 @@
   height: 100vh;
   overflow-x: hidden;
   position: fixed;
-  top: 0;
-  left: 0;
   transition: width 0.3s ease;
   opacity: 1; 
 }
@@ -20,7 +18,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-top: 4rem;
+  margin-top: 5rem;
   padding: 0.5rem;
 }
 
@@ -161,3 +159,15 @@
   transition: margin-left 0.3s ease;
 }
 
+.logotech {
+  width: 4rem;
+  height: 4rem;
+  object-fit: contain;
+}
+
+.split-text-custom {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
