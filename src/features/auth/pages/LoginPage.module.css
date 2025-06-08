@@ -1,0 +1,126 @@
+.loginPageContainer {
+  display: flex;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.formPanel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.formWrapper {
+  width: 100%;
+  max-width: 380px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1c1c1e;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #6e6e73;
+  margin-bottom: 2.5rem;
+}
+
+.inputGroup {
+  margin-bottom: 1rem;
+}
+
+.inputField {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background-color: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  color: #1c1c1e;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: #5856d6;
+  box-shadow: 0 0 0 3px rgba(88, 86, 214, 0.2);
+}
+
+.forgotPasswordLink {
+  display: block;
+  width: fit-content;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  color: #5856d6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  background-color: #5856d6;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #4341a5;
+}
+
+.submitButton:disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.registerText {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+  color: #6e6e73;
+}
+
+.registerLink {
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.logoPanel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.logo {
+  max-width: 40%;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .logoPanel {
+    display: none;
+  }
+}
