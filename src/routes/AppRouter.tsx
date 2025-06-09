@@ -31,10 +31,10 @@ import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 
 // 🚚 Módulo de Proveedores
 // REVERTIDO A 'page' EN LUGAR DE 'pages' PARA COINCIDIR CON TU ESTRUCTURA REAL
-import SuppliersListPage from '../features/suppliers/page/SuppliersListPage'; 
+import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
 import SupplierCreateForm from '../features/suppliers/components/SupplierCreateForm'; // Mantener como está
-import SupplierEditPage from '../features/suppliers/page/SupplierEditPage.tsx';     
-import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage'; 
+import SupplierEditPage from '../features/suppliers/page/SupplierEditPage.tsx';
+import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
 
 // 📦 Módulo de Productos
 import ProductsListPage from '../features/products/pages/ProductsListPage';
@@ -72,11 +72,6 @@ import PurchaseOrderDetailPage from '../features/purchaseOrders/pages/PurchaseOr
 import ProductionOrdersListPage from '../features/productionOrders/pages/ProductionOrdersListPage';
 import ProductionOrderCreatePage from '../features/productionOrders/pages/ProductionOrderCreatePage';
 import ProductionOrderDetailPage from '../features/productionOrders/pages/ProductionOrderDetailPage';
-
-// 💰 Módulo de Pagos y Cobros
-import PaymentReceiptsListPage from '../features/paymentReceipts/pages/PaymentReceiptsListPage';
-import PaymentReceiptCreatePage from '../features/paymentReceipts/pages/PaymentReceiptCreatePage';
-import PaymentReceiptDetailPage from '../features/paymentReceipts/pages/PaymentReceiptDetailPage';
 
 // 🛡️ Módulo de Roles y Permisos (solo para Admin)
 import RolePermissionsPage from '../features/rolePermissions/pages/RolePermissionsPage';
@@ -126,7 +121,7 @@ const AppRouter: React.FC = () => {
                 {/* 🚚 Módulo de Proveedores */}
                 <Route path="proveedores" element={<SuppliersListPage />} />
                 {/* Asumiendo que SupplierCreateForm es la página de creación completa o es usada por una página wrapper */}
-                <Route path="proveedores/nuevo" element={<SupplierCreateForm />} /> 
+                <Route path="proveedores/nuevo" element={<SupplierCreateForm />} />
                 <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
                 <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
 
@@ -166,11 +161,6 @@ const AppRouter: React.FC = () => {
                 <Route path="ordenes-produccion" element={<ProductionOrdersListPage />} />
                 <Route path="ordenes-produccion/nuevo" element={<ProductionOrderCreatePage />} />
                 <Route path="ordenes-produccion/:orderId" element={<ProductionOrderDetailPage />} />
-
-                {/* 💰 Módulo de Pagos y Cobros */}
-                <Route path="pagos-cobros" element={<PaymentReceiptsListPage />} />
-                <Route path="pagos-cobros/nuevo" element={<PaymentReceiptCreatePage />} />
-                <Route path="pagos-cobros/:transactionId" element={<PaymentReceiptDetailPage />} />
 
                 {/* 🛡️ Módulo de Roles y Permisos (solo para Admin) */}
                 <Route path="roles-permisos" element={<RolePermissionsPage />} />

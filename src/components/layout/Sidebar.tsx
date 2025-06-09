@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth }) => {
     { text: 'Órdenes de Producción', icon: <FaRegCalendarAlt />, path: '/ordenes-produccion', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
     { text: 'Inv. Productos', icon: <GiClothes />, path: '/inventario-productos', allowedRoles: ['Administrador', 'Gerente', 'Operario', 'Ventas'] },
     { text: 'Inv. Insumos', icon: <PiNutBold />, path: '/inventario-insumos', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
-    { text: 'Pagos y Cobros', icon: <FaListCheck />, path: '/pagos-cobros', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] },
+    // { text: 'Pagos y Cobros', icon: <FaListCheck />, path: '/pagos-cobros', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] }, // Eliminado
     { text: 'Usuarios', icon: <FaPersonCircleCheck />, path: '/usuarios', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Empleados', icon: <IoPeople />, path: '/empleados', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Roles y Permisos', icon: <FaListCheck />, path: '/roles-permisos', allowedRoles: ['Administrador'] },
