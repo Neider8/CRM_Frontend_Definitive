@@ -16,16 +16,19 @@ import {
   IconButton,
   Tooltip,
   Snackbar,
-  Skeleton, // Import Skeleton
+  Skeleton,
+  Chip, // Importar Chip para el estado visual
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn'; // Icono para habilitar
+import ToggleOffIcon from '@mui/icons-material/ToggleOff'; // Icono para deshabilitar
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { getAllUsuarios, deleteUsuarioAdmin } from '../../../api/userService';
-import type { UserInfo } from '../../../types/user.types';
+import { getAllUsuarios, deleteUsuarioAdmin, updateUsuarioAdmin } from '../../../api/userService'; // Importar updateUsuarioAdmin
+import type { UserInfo, UsuarioUpdateRequest } from '../../../types/user.types'; // Importar UsuarioUpdateRequest
 import type { Page } from '../../../types/page.types';
 import type { PageableRequest } from '../../../types/page.types';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -42,9 +45,15 @@ const UsersListPage: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  // Estados para diálogo de eliminación
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUserIdToDelete, setSelectedUserIdToDelete] = useState<number | null>(null);
   const [selectedUserNameToDelete, setSelectedUserNameToDelete] = useState<string>('');
+
+  // Nuevos estados para diálogo de habilitar/deshabilitar
+  const [openToggleStatusDialog, setOpenToggleStatusDialog] = useState(false);
+  const [selectedUserToToggle, setSelectedUserToToggle] = useState<UserInfo | null>(null);
 
   const fetchUsers = useCallback(
     async (currentPage: number, currentRowsPerPage: number) => {
@@ -103,7 +112,7 @@ const UsersListPage: React.FC = () => {
         await deleteUsuarioAdmin(selectedUserIdToDelete);
         setOpenDeleteDialog(false);
         setSuccessMessage(`Usuario '${selectedUserNameToDelete}' eliminado correctamente.`);
-        fetchUsers(page, rowsPerPage);
+        fetchUsers(page, rowsPerPage); // Recargar usuarios
       } catch (err: any) {
         setError(err.message || `Error al eliminar el usuario '${selectedUserNameToDelete}'.`);
         console.error('Error deleting user:', err);
@@ -111,6 +120,42 @@ const UsersListPage: React.FC = () => {
       } finally {
         setSelectedUserIdToDelete(null);
         setSelectedUserNameToDelete('');
+        setActionLoading(false);
+      }
+    }
+  };
+
+  // Nuevo manejador para el diálogo de habilitar/deshabilitar
+  const handleToggleStatusClick = (user: UserInfo) => {
+    setSelectedUserToToggle(user);
+    setOpenToggleStatusDialog(true);
+  };
+
+  // Nueva función para confirmar la habilitación/deshabilitación
+  const confirmToggleUserStatus = async () => {
+    if (selectedUserToToggle) {
+      setActionLoading(true);
+      setError(null);
+      setSuccessMessage(null);
+      try {
+        const newStatus = !selectedUserToToggle.habilitado;
+        const payload: UsuarioUpdateRequest = {
+          habilitado: newStatus,
+          // No necesitamos enviar otros campos si solo estamos cambiando el estado de habilitación
+          // Asegúrate de que tu backend maneje la actualización parcial si solo envías 'habilitado'
+        };
+        await updateUsuarioAdmin(selectedUserToToggle.idUsuario, payload);
+        setOpenToggleStatusDialog(false);
+        setSuccessMessage(
+          `Usuario '${selectedUserToToggle.nombreUsuario}' ${newStatus ? 'habilitado' : 'deshabilitado'} correctamente.`
+        );
+        fetchUsers(page, rowsPerPage); // Recargar usuarios para reflejar el cambio
+      } catch (err: any) {
+        setError(err.message || `Error al cambiar el estado del usuario '${selectedUserToToggle.nombreUsuario}'.`);
+        console.error('Error toggling user status:', err);
+        setOpenToggleStatusDialog(false);
+      } finally {
+        setSelectedUserToToggle(null);
         setActionLoading(false);
       }
     }
@@ -136,6 +181,10 @@ const UsersListPage: React.FC = () => {
       <TableCell>
         <Skeleton variant="text" width={100} />
       </TableCell>
+      {/* Nueva celda para el estado */}
+      <TableCell>
+        <Skeleton variant="text" width={80} />
+      </TableCell>
       <TableCell>
         <Skeleton variant="text" />
       </TableCell>
@@ -149,7 +198,6 @@ const UsersListPage: React.FC = () => {
     </TableRow>
   );
 
-  // Mostrar skeleton si está cargando y aún no hay contenido ni error
   if (loading && !usersPage?.content.length && !error) {
     return (
       <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
@@ -170,6 +218,7 @@ const UsersListPage: React.FC = () => {
                 <TableCell>ID</TableCell>
                 <TableCell>Nombre de Usuario</TableCell>
                 <TableCell>Rol</TableCell>
+                <TableCell>Estado</TableCell> {/* Nueva columna en el esqueleto */}
                 <TableCell>Empleado Asociado</TableCell>
                 <TableCell>Fecha Creación</TableCell>
                 <TableCell align="right">Acciones</TableCell>
@@ -185,11 +234,11 @@ const UsersListPage: React.FC = () => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={-1} // Total desconocido durante la carga
+          count={-1}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={() => {}} // No hacer nada durante la carga
-          onRowsPerPageChange={() => {}} // No hacer nada durante la carga
+          onPageChange={() => {}}
+          onRowsPerPageChange={() => {}}
           labelRowsPerPage="Filas por página:"
         />
       </Paper>
@@ -244,6 +293,7 @@ const UsersListPage: React.FC = () => {
                   <TableCell>ID</TableCell>
                   <TableCell>Nombre de Usuario</TableCell>
                   <TableCell>Rol</TableCell>
+                  <TableCell>Estado</TableCell> {/* Nueva columna para el estado de habilitación */}
                   <TableCell>Empleado Asociado</TableCell>
                   <TableCell>Fecha Creación</TableCell>
                   <TableCell align="right">Acciones</TableCell>
@@ -255,6 +305,14 @@ const UsersListPage: React.FC = () => {
                     <TableCell>{usuario.idUsuario}</TableCell>
                     <TableCell>{usuario.nombreUsuario}</TableCell>
                     <TableCell>{usuario.rolUsuario}</TableCell>
+                    {/* Nueva celda para mostrar el estado */}
+                    <TableCell>
+                      <Chip
+                        label={usuario.habilitado ? 'Habilitado' : 'Deshabilitado'}
+                        color={usuario.habilitado ? 'success' : 'error'}
+                        size="small"
+                      />
+                    </TableCell>
                     <TableCell>
                       {usuario.empleado
                         ? `${usuario.empleado.nombreEmpleado} (ID: ${usuario.empleado.idEmpleado})`
@@ -287,6 +345,19 @@ const UsersListPage: React.FC = () => {
                               <VpnKeyIcon />
                             </IconButton>
                           </Tooltip>
+                          {/* Nuevo botón para habilitar/deshabilitar */}
+                          {currentUser?.idUsuario !== usuario.idUsuario && ( // No permitir deshabilitar al usuario actual
+                            <Tooltip title={usuario.habilitado ? 'Deshabilitar Usuario' : 'Habilitar Usuario'}>
+                              <IconButton
+                                onClick={() => handleToggleStatusClick(usuario)}
+                                color={usuario.habilitado ? 'error' : 'success'}
+                                size="small"
+                                disabled={actionLoading}
+                              >
+                                {usuario.habilitado ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                              </IconButton>
+                            </Tooltip>
+                          )}
                           {currentUser?.idUsuario !== usuario.idUsuario && (
                             <Tooltip title="Eliminar Usuario">
                               <IconButton
@@ -324,6 +395,7 @@ const UsersListPage: React.FC = () => {
         )
       )}
 
+      {/* Diálogo de confirmación para eliminar */}
       <ConfirmationDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -332,13 +404,31 @@ const UsersListPage: React.FC = () => {
         message={`¿Estás seguro de que deseas eliminar al usuario '${selectedUserNameToDelete}'? Esta acción no se puede deshacer.`}
       />
 
+      {/* Nuevo Diálogo de confirmación para habilitar/deshabilitar */}
+      <ConfirmationDialog
+        open={openToggleStatusDialog}
+        onClose={() => setOpenToggleStatusDialog(false)}
+        onConfirm={confirmToggleUserStatus}
+        title={selectedUserToToggle?.habilitado ? 'Confirmar Deshabilitación' : 'Confirmar Habilitación'}
+        message={
+          selectedUserToToggle?.habilitado
+            ? `¿Estás seguro de que deseas deshabilitar al usuario '${selectedUserToToggle.nombreUsuario}'? Esto impedirá que inicie sesión.`
+            : `¿Estás seguro de que deseas habilitar al usuario '${selectedUserToToggle?.nombreUsuario}'? Esto le permitirá iniciar sesión.`
+        }
+        confirmButtonText={selectedUserToToggle?.habilitado ? 'Deshabilitar' : 'Habilitar'}
+        confirmButtonColor={selectedUserToToggle?.habilitado ? 'error' : 'success'}
+      />
+
       <Snackbar
-        open={!!successMessage}
+        open={!!successMessage || !!error} // Mostrar snackbar para éxito o error
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        message={successMessage}
-      />
+      >
+        <Alert onClose={handleCloseSnackbar} severity={successMessage ? 'success' : 'error'} sx={{ width: '100%' }}>
+          {successMessage || error}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };
