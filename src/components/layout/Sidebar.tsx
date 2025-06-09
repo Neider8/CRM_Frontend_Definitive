@@ -41,8 +41,9 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth }) => {
     // { text: 'Pagos y Cobros', icon: <FaListCheck />, path: '/pagos-cobros', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] }, // Eliminado
     { text: 'Usuarios', icon: <FaPersonCircleCheck />, path: '/usuarios', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Empleados', icon: <IoPeople />, path: '/empleados', allowedRoles: ['Administrador', 'Gerente'] },
-    { text: 'Roles y Permisos', icon: <FaListCheck />, path: '/roles-permisos', allowedRoles: ['Administrador'] },
-    { text: 'Definir Permisos', icon: <FaListCheck />, path: '/admin/permisos', allowedRoles: ['Administrador'] },
+    // Las siguientes líneas han sido eliminadas:
+    // { text: 'Roles y Permisos', icon: <FaListCheck />, path: '/roles-permisos', allowedRoles: ['Administrador'] },
+    // { text: 'Definir Permisos', icon: <FaListCheck />, path: '/admin/permisos', allowedRoles: ['Administrador'] },
   ];
 
   const isUserAllowed = (itemRoles?: string[]): boolean => {

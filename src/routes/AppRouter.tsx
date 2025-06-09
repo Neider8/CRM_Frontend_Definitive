@@ -30,9 +30,8 @@ import ClientEditPage from '../features/clients/pages/ClientEditPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 
 // 🚚 Módulo de Proveedores
-// REVERTIDO A 'page' EN LUGAR DE 'pages' PARA COINCIDIR CON TU ESTRUCTURA REAL
 import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
-import SupplierCreateForm from '../features/suppliers/components/SupplierCreateForm'; // Mantener como está
+import SupplierCreateForm from '../features/suppliers/components/SupplierCreateForm';
 import SupplierEditPage from '../features/suppliers/page/SupplierEditPage.tsx';
 import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
 
@@ -73,11 +72,9 @@ import ProductionOrdersListPage from '../features/productionOrders/pages/Product
 import ProductionOrderCreatePage from '../features/productionOrders/pages/ProductionOrderCreatePage';
 import ProductionOrderDetailPage from '../features/productionOrders/pages/ProductionOrderDetailPage';
 
-// 🛡️ Módulo de Roles y Permisos (solo para Admin)
-import RolePermissionsPage from '../features/rolePermissions/pages/RolePermissionsPage';
-
-// 🛡️ Nuevo: Página de Permisos de Admin
-import AdminPermissionsPage from '../features/adminPermissions/pages/AdminPermissionsPage';
+// Las siguientes importaciones han sido eliminadas:
+// import RolePermissionsPage from '../features/rolePermissions/pages/RolePermissionsPage';
+// import AdminPermissionsPage from '../features/adminPermissions/pages/AdminPermissionsPage';
 
 const AppRouter: React.FC = () => {
     return (
@@ -162,11 +159,9 @@ const AppRouter: React.FC = () => {
                 <Route path="ordenes-produccion/nuevo" element={<ProductionOrderCreatePage />} />
                 <Route path="ordenes-produccion/:orderId" element={<ProductionOrderDetailPage />} />
 
-                {/* 🛡️ Módulo de Roles y Permisos (solo para Admin) */}
-                <Route path="roles-permisos" element={<RolePermissionsPage />} />
-
-                {/* 🛡️ Nuevo: Página de Permisos de Admin */}
-                <Route path="admin/permisos" element={<AdminPermissionsPage />} />
+                {/* Las siguientes rutas han sido eliminadas: */}
+                {/* <Route path="roles-permisos" element={<RolePermissionsPage />} /> */}
+                {/* <Route path="admin/permisos" element={<AdminPermissionsPage />} /> */}
 
                 {/* Aquí puedes agregar más rutas futuras */}
             </Route>
