@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import SyncAltIcon from '@mui/icons-material/SyncAlt'; // Para registrar movimiento
 import CategoryIcon from '@mui/icons-material/Category'; // Icono para insumos
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { getAllSupplyInventories } from '../../../api/supplyInventoryService';
@@ -14,7 +14,11 @@ import type { SupplyInventoryPageableRequest, PaginatedSupplyInventories } from 
 import { useAuth } from '../../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { formatCurrency } from '../../../utils/formatting'; // Si necesitas formatear cantidades con decimales
+// Si estás usando React Query, descomenta la siguiente línea:
+import { useQueryClient } from '@tanstack/react-query';
+
+// Importar el modal de movimiento de insumos
+import SupplyMovementCreateModal from '../components/SupplyMovementCreateModal';
 
 const SupplyInventoryListPage: React.FC = () => {
   const { user: currentUser } = useAuth();
@@ -24,6 +28,14 @@ const SupplyInventoryListPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // ESTADOS PARA EL MODAL DE MOVIMIENTO
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any | null>(null); // Almacena el item completo para pasar props
+
+  // Inicializar useQueryClient (si estás usando React Query)
+  // Si no estás usando React Query, puedes eliminar esta línea.
+  const queryClient = useQueryClient();
 
   const fetchInventories = useCallback(async (currentPage: number, currentRowsPerPage: number) => {
     setLoading(true);
@@ -58,13 +70,25 @@ const SupplyInventoryListPage: React.FC = () => {
     navigate(`/inventario-insumos/${inventoryId}`);
   };
 
-  const handleRegisterMovement = (inventoryId: number) => {
-    navigate(`/inventario-insumos/${inventoryId}/movimientos/nuevo`);
+  // NUEVA FUNCIÓN PARA ABRIR EL MODAL: ahora recibe el 'item' completo
+  const handleOpenMovementModal = (item: any) => {
+    setSelectedInventoryItem(item);
+    setIsMovementModalOpen(true);
+  };
+
+  // NUEVA FUNCIÓN PARA CERRAR EL MODAL Y REFRESCAR LA LISTA
+  const handleCloseMovementModal = () => {
+    setIsMovementModalOpen(false);
+    setSelectedInventoryItem(null);
+    // Invalidar la caché para refrescar la lista de inventario después de un movimiento
+    // Si estás usando React Query, esta línea es necesaria:
+    queryClient.invalidateQueries({ queryKey: ['supplyInventories'] });
+    fetchInventories(page, rowsPerPage); // Vuelve a cargar la lista para ver el cambio
   };
 
   // Permisos según InventarioInsumoController
-  const canManageInventory = currentUser?.rolUsuario === 'Administrador' || 
-                             currentUser?.rolUsuario === 'Gerente' || 
+  const canManageInventory = currentUser?.rolUsuario === 'Administrador' ||
+                             currentUser?.rolUsuario === 'Gerente' ||
                              currentUser?.rolUsuario === 'Operario';
   const canViewInventory = canManageInventory; // En este caso, ver y gestionar tienen los mismos roles
 
@@ -72,7 +96,7 @@ const SupplyInventoryListPage: React.FC = () => {
     return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
   }
   if (!canViewInventory && !loading && !error) {
-     return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
+      return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
   }
   if (error && !inventoryPage?.content.length) {
     return <Container maxWidth="md"><Alert severity="error" sx={{mt:2}}>{error}</Alert></Container>;
@@ -97,7 +121,7 @@ const SupplyInventoryListPage: React.FC = () => {
         )}
       </Box>
 
-      {error && inventoryPage?.content && inventoryPage.content.length > 0 && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (inventoryPage?.content?.length ?? 0) > 0 && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {loading && <Box sx={{ display: 'flex', justifyContent: 'center', my:2 }}><CircularProgress /></Box>}
 
       {!loading && inventoryPage && inventoryPage.content.length > 0 ? (
@@ -126,7 +150,7 @@ const SupplyInventoryListPage: React.FC = () => {
                     </TableCell>
                     <TableCell>{item.ubicacionInventario}</TableCell>
                     <TableCell align="right">
-                      {/* Formatear con decimales si es necesario, tu backend DTO tiene scale 3 */}
+                      {/* Asegúrate de que `formatCurrency` esté disponible o ajusta a toLocaleString */}
                       {Number(item.cantidadStock).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
                     </TableCell>
                     <TableCell>{item.insumo.unidadMedidaInsumo}</TableCell>
@@ -141,7 +165,8 @@ const SupplyInventoryListPage: React.FC = () => {
                       </Tooltip>
                       {canManageInventory && (
                         <Tooltip title="Registrar Movimiento">
-                          <IconButton onClick={() => handleRegisterMovement(item.idInventarioInsumo)} color="secondary" size="small">
+                          {/* CAMBIO CLAVE AQUÍ: Llama a handleOpenMovementModal y pasa el item completo */}
+                          <IconButton onClick={() => handleOpenMovementModal(item)} color="secondary" size="small">
                             <SyncAltIcon />
                           </IconButton>
                         </Tooltip>
@@ -165,7 +190,21 @@ const SupplyInventoryListPage: React.FC = () => {
           />
         </>
       ) : (
-         !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron registros de inventario de insumos.</Typography>
+          !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron registros de inventario de insumos.</Typography>
+      )}
+
+      {/* RENDERIZAR EL MODAL AQUÍ: Solo si isMovementModalOpen es true y hay un item seleccionado */}
+      {isMovementModalOpen && selectedInventoryItem && (
+        <SupplyMovementCreateModal
+          open={isMovementModalOpen}
+          onClose={handleCloseMovementModal} // Pasa la función para cerrar el modal
+          inventoryId={selectedInventoryItem.idInventarioInsumo}
+          insumoName={selectedInventoryItem.insumo.nombreInsumo}
+          insumoUnidad={selectedInventoryItem.insumo.unidadMedidaInsumo}
+          location={selectedInventoryItem.ubicacionInventario}
+          currentStock={selectedInventoryItem.cantidadStock}
+          onMovementRegistered={handleCloseMovementModal} // El callback que se llama cuando el movimiento es exitoso (cierra el modal y refresca la lista)
+        />
       )}
     </Paper>
   );

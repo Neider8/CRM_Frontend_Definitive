@@ -16,6 +16,12 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import { parseISO } from 'date-fns/parseISO';
 
+// IMPORTAR EL MODAL
+import ProductMovementCreateModal from '../components/ProductMovementCreateModal';
+// IMPORTAR useQueryClient para invalidar caché y refrescar datos (si estás usando React Query)
+// Si no estás usando React Query, puedes eliminar esta importación y las líneas que la usan.
+import { useQueryClient } from '@tanstack/react-query';
+
 
 const ProductInventoryListPage: React.FC = () => {
   const { user: currentUser } = useAuth();
@@ -26,6 +32,13 @@ const ProductInventoryListPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  // ESTADOS PARA EL MODAL DE MOVIMIENTO
+  const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any | null>(null); // Almacena el item completo para pasar props
+
+  // Inicializar useQueryClient (si estás usando React Query)
+  const queryClient = useQueryClient();
+
   const fetchInventories = useCallback(async (currentPage: number, currentRowsPerPage: number) => {
     setLoading(true);
     setError(null);
@@ -33,7 +46,7 @@ const ProductInventoryListPage: React.FC = () => {
       const params: ProductInventoryPageableRequest = {
         page: currentPage,
         size: currentRowsPerPage,
-        sort: 'producto.nombreProducto,asc', // O 'ubicacionInventario,asc'
+        sort: 'producto.nombreProducto,asc',
       };
       const data = await getAllProductInventories(params);
       setInventoryPage(data);
@@ -59,13 +72,26 @@ const ProductInventoryListPage: React.FC = () => {
     navigate(`/inventario-productos/${inventoryId}`); // Ruta para ver detalles y movimientos
   };
 
-  const handleRegisterMovement = (inventoryId: number) => {
-    navigate(`/inventario-productos/${inventoryId}/movimientos/nuevo`); // Ruta para registrar movimiento
+  // NUEVA FUNCIÓN PARA ABRIR EL MODAL: ahora recibe el 'item' completo
+  const handleOpenMovementModal = (item: any) => {
+    setSelectedInventoryItem(item);
+    setIsMovementModalOpen(true);
   };
 
+  // NUEVA FUNCIÓN PARA CERRAR EL MODAL Y REFRESCAR LA LISTA
+  const handleCloseMovementModal = () => {
+    setIsMovementModalOpen(false);
+    setSelectedInventoryItem(null);
+    // Invalidar la caché para refrescar la lista de inventario después de un movimiento
+    // Si no estás usando React Query, esta línea no es necesaria.
+    queryClient.invalidateQueries({ queryKey: ['productInventories'] });
+    fetchInventories(page, rowsPerPage); // Vuelve a cargar la lista para ver el cambio
+  };
+
+
   // Permisos según InventarioProductoController
-  const canManageInventory = currentUser?.rolUsuario === 'Administrador' || 
-                             currentUser?.rolUsuario === 'Gerente' || 
+  const canManageInventory = currentUser?.rolUsuario === 'Administrador' ||
+                             currentUser?.rolUsuario === 'Gerente' ||
                              currentUser?.rolUsuario === 'Operario';
   const canViewInventory = canManageInventory || currentUser?.rolUsuario === 'Ventas';
 
@@ -74,7 +100,7 @@ const ProductInventoryListPage: React.FC = () => {
     return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
   }
   if (!canViewInventory && !loading && !error) {
-     return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
+      return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
   }
   if (error && !inventoryPage?.content.length) {
     return <Container maxWidth="md"><Alert severity="error" sx={{mt:2}}>{error}</Alert></Container>;
@@ -138,8 +164,9 @@ const ProductInventoryListPage: React.FC = () => {
                       </Tooltip>
                       {canManageInventory && (
                         <Tooltip title="Registrar Movimiento">
-                          <IconButton onClick={() => handleRegisterMovement(item.idInventarioProducto)} color="secondary" size="small">
-                            <SyncAltIcon />
+                          {/* CAMBIO CLAVE AQUÍ: Llama a handleOpenMovementModal y pasa el item completo */}
+                          <IconButton onClick={() => handleOpenMovementModal(item)} color="secondary" size="small">
+                            <SyncAltIcon /> {/* Icono de flechas moradas */}
                           </IconButton>
                         </Tooltip>
                       )}
@@ -158,11 +185,24 @@ const ProductInventoryListPage: React.FC = () => {
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
             labelRowsPerPage="Filas por página:"
-             getItemAriaLabel={(type) => type === 'first' ? 'Primera página' : type === 'last' ? 'Última página' : type === 'next' ? 'Siguiente página' : 'Página anterior'}
+            getItemAriaLabel={(type) => type === 'first' ? 'Primera página' : type === 'last' ? 'Última página' : type === 'next' ? 'Siguiente página' : 'Página anterior'}
           />
         </>
       ) : (
-         !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron registros de inventario de productos.</Typography>
+          !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron registros de inventario de productos.</Typography>
+      )}
+
+      {/* RENDERIZAR EL MODAL AQUÍ: Solo si isMovementModalOpen es true y hay un item seleccionado */}
+      {isMovementModalOpen && selectedInventoryItem && (
+        <ProductMovementCreateModal
+          open={isMovementModalOpen}
+          onClose={handleCloseMovementModal} // Pasa la función para cerrar el modal
+          inventoryId={selectedInventoryItem.idInventarioProducto}
+          productName={selectedInventoryItem.producto.nombreProducto}
+          location={selectedInventoryItem.ubicacionInventario}
+          currentStock={selectedInventoryItem.cantidadStock}
+          onMovementRegistered={handleCloseMovementModal} // El callback que se llama cuando el movimiento es exitoso (cierra el modal y refresca la lista)
+        />
       )}
     </Paper>
   );
