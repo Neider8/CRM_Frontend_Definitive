@@ -1,17 +1,18 @@
 import { Container, Typography, Box, CircularProgress, Alert, IconButton, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useParams, useNavigate } from 'react-router-dom'; // <<-- LÍNEA CORREGIDA AQUÍ
-import SupplierEditForm from '../components/SupplierEditForm'; // <<-- ASEGÚRATE DE QUE ESTA LÍNEA IMPORTE SupplierEditForm
+import { useParams, useNavigate } from 'react-router-dom';
+import SupplierEditForm from '../components/SupplierEditForm'; // ASEGÚRATE DE QUE ESTA LÍNEA IMPORTE SupplierEditForm
 import type { SupplierDetails } from '../../../types/supplier.types';
 import { getSupplierById } from '../../../api/supplierService';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom'; // Importar Link de react-router-dom
+import { Link as RouterLink } from 'react-router-dom';
 
 const SupplierEditPage = () => {
-  const { id } = useParams<{ id: string }>();
+  // CORREGIDO: Usar 'supplierId' para coincidir con la ruta definida en AppRouter.tsx
+  const { supplierId: idParam } = useParams<{ supplierId: string }>(); 
   const navigate = useNavigate();
-  const supplierId = id ? parseInt(id, 10) : undefined; // Convertir a número o undefined
+  const supplierId = idParam ? parseInt(idParam, 10) : undefined; // Convertir a número o undefined
 
   const { data: supplier, isLoading, isError, error } = useQuery<SupplierDetails, Error>({
     queryKey: ['supplier', supplierId],
@@ -25,8 +26,9 @@ const SupplierEditPage = () => {
   });
 
   useEffect(() => {
+    // CORREGIDO: Redirigir a '/proveedores' para consistencia con las rutas en español
     if (!supplierId) {
-      navigate('/suppliers'); // Redirigir si no hay ID válido
+      navigate('/proveedores'); 
     }
   }, [supplierId, navigate]);
 
@@ -48,7 +50,8 @@ const SupplierEditPage = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/suppliers')}
+            // CORREGIDO: Redirigir a '/proveedores'
+            onClick={() => navigate('/proveedores')}
           >
             Volver a la lista de proveedores
           </Button>
@@ -65,7 +68,8 @@ const SupplierEditPage = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/suppliers')}
+            // CORREGIDO: Redirigir a '/proveedores'
+            onClick={() => navigate('/proveedores')}
           >
             Volver a la lista de proveedores
           </Button>
@@ -77,14 +81,16 @@ const SupplierEditPage = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        <IconButton component={RouterLink} to="/suppliers" aria-label="back">
+        {/* CORREGIDO: Redirigir a '/proveedores' */}
+        <IconButton component={RouterLink} to="/proveedores" aria-label="back"> 
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" component="h1" sx={{ ml: 1 }}>
           Editar Proveedor
         </Typography>
       </Box>
-      <SupplierEditForm supplyDatadata={supplier} /> {/* Asegúrate de que 'supplier' no sea undefined aquí */}
+      {/* CORREGIDO: Renombrar el prop a algo más convencional como 'supplierData' */}
+      <SupplierEditForm supplierData={supplier} /> 
     </Container>
   );
 };

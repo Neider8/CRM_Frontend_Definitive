@@ -30,10 +30,11 @@ import ClientEditPage from '../features/clients/pages/ClientEditPage';
 import ClientDetailPage from '../features/clients/pages/ClientDetailPage';
 
 // 🚚 Módulo de Proveedores
-import SuppliersListPage from '../features/suppliers/page/SuppliersListPage';
-import SupplierCreatePage from '../features/suppliers/components/SupplierCreateForm';
-import SupplierEditPage from '../features/suppliers/page/SupplierEditPage';
-import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage';
+// REVERTIDO A 'page' EN LUGAR DE 'pages' PARA COINCIDIR CON TU ESTRUCTURA REAL
+import SuppliersListPage from '../features/suppliers/page/SuppliersListPage'; 
+import SupplierCreateForm from '../features/suppliers/components/SupplierCreateForm'; // Mantener como está
+import SupplierEditPage from '../features/suppliers/page/SupplierEditPage.tsx';     
+import SupplierDetailPage from '../features/suppliers/page/SupplierDetailPage'; 
 
 // 📦 Módulo de Productos
 import ProductsListPage from '../features/products/pages/ProductsListPage';
@@ -124,8 +125,8 @@ const AppRouter: React.FC = () => {
 
                 {/* 🚚 Módulo de Proveedores */}
                 <Route path="proveedores" element={<SuppliersListPage />} />
-                <Route path="proveedores/nuevo" element={<SupplierCreatePage />} />
-                {/* Se unificó la ruta para usar ':supplierId' como en la rama daniel, que es más estándar */}
+                {/* Asumiendo que SupplierCreateForm es la página de creación completa o es usada por una página wrapper */}
+                <Route path="proveedores/nuevo" element={<SupplierCreateForm />} /> 
                 <Route path="proveedores/:supplierId/editar" element={<SupplierEditPage />} />
                 <Route path="proveedores/:supplierId" element={<SupplierDetailPage />} />
 
