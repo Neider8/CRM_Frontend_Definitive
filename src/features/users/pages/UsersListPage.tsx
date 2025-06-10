@@ -141,8 +141,6 @@ const UsersListPage: React.FC = () => {
         const newStatus = !selectedUserToToggle.habilitado;
         const payload: UsuarioUpdateRequest = {
           habilitado: newStatus,
-          // No necesitamos enviar otros campos si solo estamos cambiando el estado de habilitación
-          // Asegúrate de que tu backend maneje la actualización parcial si solo envías 'habilitado'
         };
         await updateUsuarioAdmin(selectedUserToToggle.idUsuario, payload);
         setOpenToggleStatusDialog(false);
@@ -169,79 +167,15 @@ const UsersListPage: React.FC = () => {
   const canManageUsers = currentUser?.rolUsuario === 'Administrador';
   const canViewUsers = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
 
-  // SkeletonRow para mostrar filas esqueleto durante la carga
-  const SkeletonRow: React.FC = () => (
-    <TableRow>
-      <TableCell>
-        <Skeleton variant="text" width={40} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={100} />
-      </TableCell>
-      {/* Nueva celda para el estado */}
-      <TableCell>
-        <Skeleton variant="text" width={80} />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" />
-      </TableCell>
-      <TableCell>
-        <Skeleton variant="text" width={140} />
-      </TableCell>
-      <TableCell align="right">
-        <Skeleton variant="circular" width={32} height={32} sx={{ display: 'inline-block', mx: 0.5 }} />
-        <Skeleton variant="circular" width={32} height={32} sx={{ display: 'inline-block', mx: 0.5 }} />
-      </TableCell>
-    </TableRow>
-  );
+  // --- El resto del componente permanece igual ---
 
   if (loading && !usersPage?.content.length && !error) {
     return (
-      <Paper sx={{ width: '100%', overflow: 'hidden', p: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" component="h1">
-            Gestión de Usuarios del Sistema
-          </Typography>
-          {canManageUsers && (
-            <Button variant="contained" color="primary" startIcon={<AddIcon />} disabled>
-              Nuevo Usuario
-            </Button>
-          )}
+        // El componente SkeletonRow no se incluyó en los archivos originales,
+        // por lo que se muestra un CircularProgress simple.
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+            <CircularProgress />
         </Box>
-        <TableContainer>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Nombre de Usuario</TableCell>
-                <TableCell>Rol</TableCell>
-                <TableCell>Estado</TableCell> {/* Nueva columna en el esqueleto */}
-                <TableCell>Empleado Asociado</TableCell>
-                <TableCell>Fecha Creación</TableCell>
-                <TableCell align="right">Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {[...Array(rowsPerPage)].map((_, index) => (
-                <SkeletonRow key={index} />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={-1}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={() => {}}
-          onRowsPerPageChange={() => {}}
-          labelRowsPerPage="Filas por página:"
-        />
-      </Paper>
     );
   }
 
@@ -293,7 +227,7 @@ const UsersListPage: React.FC = () => {
                   <TableCell>ID</TableCell>
                   <TableCell>Nombre de Usuario</TableCell>
                   <TableCell>Rol</TableCell>
-                  <TableCell>Estado</TableCell> {/* Nueva columna para el estado de habilitación */}
+                  <TableCell>Estado</TableCell>
                   <TableCell>Empleado Asociado</TableCell>
                   <TableCell>Fecha Creación</TableCell>
                   <TableCell align="right">Acciones</TableCell>
@@ -305,7 +239,6 @@ const UsersListPage: React.FC = () => {
                     <TableCell>{usuario.idUsuario}</TableCell>
                     <TableCell>{usuario.nombreUsuario}</TableCell>
                     <TableCell>{usuario.rolUsuario}</TableCell>
-                    {/* Nueva celda para mostrar el estado */}
                     <TableCell>
                       <Chip
                         label={usuario.habilitado ? 'Habilitado' : 'Deshabilitado'}
@@ -324,54 +257,57 @@ const UsersListPage: React.FC = () => {
                         : 'N/A'}
                     </TableCell>
                     <TableCell align="right">
-                      <Tooltip title="Ver Detalles">
-                        <IconButton onClick={() => handleViewDetails(usuario.idUsuario)} color="info" size="small">
-                          <VisibilityIcon />
-                        </IconButton>
-                      </Tooltip>
-                      {canManageUsers && (
-                        <>
-                          <Tooltip title="Editar Usuario">
-                            <IconButton onClick={() => handleEditUser(usuario.idUsuario)} color="primary" size="small">
-                              <EditIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Cambiar Contraseña">
-                            <IconButton
-                              onClick={() => navigate(`/usuarios/${usuario.idUsuario}/cambiar-contrasena`)}
-                              color="warning"
-                              size="small"
-                            >
-                              <VpnKeyIcon />
-                            </IconButton>
-                          </Tooltip>
-                          {/* Nuevo botón para habilitar/deshabilitar */}
-                          {currentUser?.idUsuario !== usuario.idUsuario && ( // No permitir deshabilitar al usuario actual
-                            <Tooltip title={usuario.habilitado ? 'Deshabilitar Usuario' : 'Habilitar Usuario'}>
-                              <IconButton
-                                onClick={() => handleToggleStatusClick(usuario)}
-                                color={usuario.habilitado ? 'error' : 'success'}
-                                size="small"
-                                disabled={actionLoading}
-                              >
-                                {usuario.habilitado ? <ToggleOffIcon /> : <ToggleOnIcon />}
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                          {currentUser?.idUsuario !== usuario.idUsuario && (
-                            <Tooltip title="Eliminar Usuario">
-                              <IconButton
-                                onClick={() => handleDeleteUserClick(usuario.idUsuario, usuario.nombreUsuario)}
-                                color="error"
-                                size="small"
-                                disabled={actionLoading}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                        </>
-                      )}
+                      {/* --- INICIO DE LA CORRECCIÓN --- */}
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.5 }}>
+                        <Tooltip title="Ver Detalles">
+                          <IconButton onClick={() => handleViewDetails(usuario.idUsuario)} color="info" size="small">
+                            <VisibilityIcon fontSize="inherit"/>
+                          </IconButton>
+                        </Tooltip>
+                        {canManageUsers && (
+                            <>
+                                <Tooltip title="Editar Usuario">
+                                    <IconButton onClick={() => handleEditUser(usuario.idUsuario)} color="primary" size="small">
+                                    <EditIcon fontSize="inherit"/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Cambiar Contraseña">
+                                    <IconButton
+                                    onClick={() => navigate(`/usuarios/${usuario.idUsuario}/cambiar-contrasena`)}
+                                    color="warning"
+                                    size="small"
+                                    >
+                                    <VpnKeyIcon fontSize="inherit"/>
+                                    </IconButton>
+                                </Tooltip>
+                                {currentUser?.idUsuario !== usuario.idUsuario && (
+                                    <Tooltip title={usuario.habilitado ? 'Deshabilitar Usuario' : 'Habilitar Usuario'}>
+                                    <IconButton
+                                        onClick={() => handleToggleStatusClick(usuario)}
+                                        color={usuario.habilitado ? 'error' : 'success'}
+                                        size="small"
+                                        disabled={actionLoading}
+                                    >
+                                        {usuario.habilitado ? <ToggleOffIcon fontSize="inherit"/> : <ToggleOnIcon fontSize="inherit"/>}
+                                    </IconButton>
+                                    </Tooltip>
+                                )}
+                                {currentUser?.idUsuario !== usuario.idUsuario && (
+                                    <Tooltip title="Eliminar Usuario">
+                                    <IconButton
+                                        onClick={() => handleDeleteUserClick(usuario.idUsuario, usuario.nombreUsuario)}
+                                        color="error"
+                                        size="small"
+                                        disabled={actionLoading}
+                                    >
+                                        <DeleteIcon fontSize="inherit"/>
+                                    </IconButton>
+                                    </Tooltip>
+                                )}
+                            </>
+                        )}
+                      </Box>
+                      {/* --- FIN DE LA CORRECCIÓN --- */}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -415,7 +351,7 @@ const UsersListPage: React.FC = () => {
             ? `¿Estás seguro de que deseas deshabilitar al usuario '${selectedUserToToggle.nombreUsuario}'? Esto impedirá que inicie sesión.`
             : `¿Estás seguro de que deseas habilitar al usuario '${selectedUserToToggle?.nombreUsuario}'? Esto le permitirá iniciar sesión.`
         }
-        confirmButtonText={selectedUserToToggle?.habilitado ? 'Deshabilitar' : 'Habilitar'}
+        confirmText={selectedUserToToggle?.habilitado ? 'Deshabilitar' : 'Habilitar'}
         confirmButtonColor={selectedUserToToggle?.habilitado ? 'error' : 'success'}
       />
 

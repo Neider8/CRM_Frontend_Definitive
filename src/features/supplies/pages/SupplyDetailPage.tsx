@@ -13,9 +13,8 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 
 import { getInsumoById, deleteInsumo } from '../../../api/supplyService';
-import { getInventoriesByInsumoId } from '../../../api/supplyInventoryService';
+// Ya no necesitamos getInventoriesByInsumoId aquí para el umbral
 import type { InsumoDetails } from '../../../types/supply.types';
-import type { InventarioInsumo } from '../../../types/inventory.types';
 import { useAuth } from '../../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale/es';
@@ -28,11 +27,11 @@ const SupplyDetailPage: React.FC = () => {
   const { user: currentUser } = useAuth();
 
   const [supply, setSupply] = useState<InsumoDetails | null>(null);
-  const [inventory, setInventory] = useState<InventarioInsumo | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const supplyId = parseInt(supplyIdParam || '', 10);
@@ -42,13 +41,9 @@ const SupplyDetailPage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
+        // Ahora solo necesitamos obtener los datos del insumo maestro
         const supplyData = await getInsumoById(supplyId);
         setSupply(supplyData);
-        
-        const inventoryData = await getInventoriesByInsumoId(supplyId);
-        if (inventoryData.length > 0) {
-          setInventory(inventoryData[0]);
-        }
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'No se pudo cargar la información del insumo.';
         console.error("Error al cargar datos del insumo:", err);
@@ -75,11 +70,13 @@ const SupplyDetailPage: React.FC = () => {
       try {
         await deleteInsumo(supply.idInsumo);
         setSuccessMessage(`Insumo '${supply.nombreInsumo}' eliminado correctamente.`);
+        setSnackbarOpen(true);
         setOpenDeleteDialog(false);
         setTimeout(() => navigate('/insumos'), 2000);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Error al eliminar el insumo.';
         setError(errorMessage);
+        setSnackbarOpen(true);
         setOpenDeleteDialog(false);
       } finally {
         setActionLoading(false);
@@ -88,9 +85,22 @@ const SupplyDetailPage: React.FC = () => {
   };
 
   const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
     setSuccessMessage(null);
     setError(null);
   };
+  
+  // --- INICIO DE LA CORRECCIÓN LÓGICA ---
+  // El callback ahora actualiza el estado local para dar feedback inmediato.
+  const handleThresholdUpdate = (newThreshold: number) => {
+    if (supply) {
+      // Actualizamos nuestro estado local 'supply' para que la UI refleje el cambio al instante.
+      setSupply({ ...supply, stockMinimoInsumo: newThreshold });
+    }
+    setSuccessMessage("¡Umbral de alerta actualizado con éxito!");
+    setSnackbarOpen(true);
+  };
+  // --- FIN DE LA CORRECCIÓN LÓGICA ---
   
   const canEditSupply = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
   const canDeleteSupply = currentUser?.rolUsuario === 'Administrador';
@@ -122,7 +132,7 @@ const SupplyDetailPage: React.FC = () => {
           <Typography variant="h4" component="h1">
             Detalle del Insumo
           </Typography>
-        </Box>
+         </Box>
         <Box>
           {canEditSupply && (
             <Button
@@ -150,8 +160,6 @@ const SupplyDetailPage: React.FC = () => {
         </Box>
       </Box>
 
-      {successMessage && <Alert severity="success" sx={{ mb: 2 }} onClose={handleCloseSnackbar}>{successMessage}</Alert>}
-
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'flex-start', gap: 3 }}>
           <Box sx={{ width: { xs: '100%', md: '33.33%' }, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
@@ -164,14 +172,15 @@ const SupplyDetailPage: React.FC = () => {
             <Chip label={`ID: ${supply.idInsumo}`} size="small" sx={{ mb: 1 }} />
           </Box>
           <Box sx={{ width: { xs: '100%', md: '66.66%' } }}>
-            <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
               <InfoIcon sx={{ mr: 1 }} color="action" /> Información del Insumo
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Stack spacing={1.5}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary">Descripción:</Typography><Typography variant="body1">{supply.descripcionInsumo || 'N/A'}</Typography></Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary" sx={{display:'flex', alignItems:'center'}}><StraightenIcon sx={{mr:0.5}} fontSize="inherit"/>Unidad de Medida:</Typography><Typography variant="body1">{supply.unidadMedidaInsumo}</Typography></Box>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary" sx={{display:'flex', alignItems:'center'}}><InventoryIcon sx={{mr:0.5}} fontSize="inherit"/>Stock Mínimo:</Typography><Typography variant="body1">{supply.stockMinimoInsumo ?? 'N/A'}</Typography></Box>
+                {/* --- CAMBIO VISUAL: Este valor ahora se actualiza correctamente --- */}
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary" sx={{display:'flex', alignItems:'center'}}><InventoryIcon sx={{mr:0.5}} fontSize="inherit"/>Stock Mínimo:</Typography><Typography variant="body1" fontWeight="bold">{supply.stockMinimoInsumo ?? 'No definido'}</Typography></Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary">Fecha Creación:</Typography><Typography variant="body1">{format(parseISO(supply.fechaCreacion), 'dd/MM/yyyy HH:mm', { locale: es })}</Typography></Box>
                 {supply.fechaActualizacion && (
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}><Typography variant="body2" color="text.secondary">Última Actualización:</Typography><Typography variant="body1">{format(parseISO(supply.fechaActualizacion), 'dd/MM/yyyy HH:mm', { locale: es })}</Typography></Box>
@@ -181,16 +190,14 @@ const SupplyDetailPage: React.FC = () => {
         </Box>
       </Paper>
       
-      {inventory && canEditSupply && (
+      {/* El configurador ahora siempre reflejará el estado correcto */}
+      {canEditSupply && (
         <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
           <StockThresholdConfigurator
             itemId={supply.idInsumo}
             itemType="Insumo"
-            currentThreshold={inventory.umbralMinimoStock || 0}
-            onThresholdUpdate={(newThreshold: number) => {
-              setInventory(prev => prev ? { ...prev, umbralMinimoStock: newThreshold } : null);
-              setSuccessMessage("¡Umbral de alerta actualizado con éxito!");
-            }}
+            currentThreshold={supply.stockMinimoInsumo || 0}
+            onThresholdUpdate={handleThresholdUpdate}
           />
         </Paper>
       )}
@@ -204,14 +211,14 @@ const SupplyDetailPage: React.FC = () => {
         confirmText="Eliminar"
         isLoading={actionLoading}
       />
-       <Snackbar
-        open={!!successMessage}
+      <Snackbar
+        open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
-          {successMessage}
+        <Alert onClose={handleCloseSnackbar} severity={successMessage ? "success" : "error"} sx={{ width: '100%' }}>
+          {successMessage || error}
         </Alert>
       </Snackbar>
     </Container>

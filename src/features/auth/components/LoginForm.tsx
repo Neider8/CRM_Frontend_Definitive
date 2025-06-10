@@ -1,18 +1,32 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // 1. Importa useNavigate
+import React, { useState } from 'react'; // Importar useState
+import { Link, useNavigate } from 'react-router-dom';
 import styles from '../pages/LoginPage.module.css';
 
 import { loginUser } from '../../../api/authService';
-import type { LoginCredentials, AuthTokenPayload } from '../../../types/auth.types';
-import { useAuth } from '../../../contexts/AuthContext'; // 2. Importa tu hook de autenticación
+import type { LoginCredentials } from '../../../types/auth.types';
+import { useAuth } from '../../../contexts/AuthContext';
+
+// --- INICIO DE CAMBIOS ---
+import { IconButton } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+// --- FIN DE CAMBIOS ---
+
 
 export const LoginForm = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({ nombreUsuario: '', contrasena: '' });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
-  const navigate = useNavigate(); // 3. Inicializa el hook de navegación
-  const { login } = useAuth();    // 4. Obtén la función 'login' de tu contexto
+  // --- INICIO DE CAMBIOS: Estado para visibilidad de contraseña ---
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+  // --- FIN DE CAMBIOS ---
+  
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,12 +40,7 @@ export const LoginForm = () => {
 
     try {
       const authTokenPayload = await loginUser(credentials);
-      
-      // 5. Llama a la función 'login' de tu contexto. 
-      // Esta función debería guardar el token y actualizar el estado global del usuario.
       await login(authTokenPayload);
-
-      // 6. Navega al dashboard "al modo React", sin recargar la página.
       navigate('/dashboard', { replace: true });
 
     } catch (err: unknown) {
@@ -48,11 +57,8 @@ export const LoginForm = () => {
     }
   };
 
-  // El JSX no cambia en absoluto
   return (
     <div className={styles.formWrapper}>
-        {/* ... Tu JSX del formulario va aquí ... */}
-        {/* (es idéntico al de la respuesta anterior) */}
         <h1 className={styles.title}>Inicio de Sesion</h1>
         <p className={styles.subtitle}>Bienvenido</p>
         <form noValidate onSubmit={handleSubmit}>
@@ -69,9 +75,10 @@ export const LoginForm = () => {
                     disabled={isLoading}
                 />
             </div>
-            <div className={styles.inputGroup}>
+            {/* --- INICIO DE CAMBIOS: Campo de contraseña actualizado --- */}
+            <div className={styles.passwordInputWrapper}>
                 <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     id="contrasena"
                     name="contrasena"
                     className={styles.inputField}
@@ -81,7 +88,16 @@ export const LoginForm = () => {
                     required
                     disabled={isLoading}
                 />
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  className={styles.passwordVisibilityIcon}
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
             </div>
+            {/* --- FIN DE CAMBIOS --- */}
             <Link to="/forgot-password" className={styles.forgotPasswordLink}>
                 ¿Olvidaste contraseña?
             </Link>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, CircularProgress } from '@mui/material';
-import { updateInsumoThreshold, updateProductoThreshold } from '../../api/stockAlertsService'; // Asegúrate de que estas funciones existan
+import { updateInsumoThreshold, updateProductoThreshold } from '../../api/stockAlertsService';
 
 interface StockThresholdConfiguratorProps {
   itemId: number;
@@ -42,7 +42,6 @@ const StockThresholdConfigurator: React.FC<StockThresholdConfiguratorProps> = ({
         onThresholdUpdate(numericThreshold);
       }
     } catch (err: unknown) {
-      // Manejo de error simplificado
       const errorMessage = err instanceof Error ? err.message : 'No se pudo actualizar el umbral.';
       console.error("Error updating threshold:", err);
       setError(errorMessage);
@@ -72,15 +71,21 @@ const StockThresholdConfigurator: React.FC<StockThresholdConfiguratorProps> = ({
           error={!!error}
           helperText={error || `Umbral actual: ${currentThreshold}`}
         />
+        {/* --- INICIO DE LA CORRECCIÓN --- */}
         <Button
+          type="submit"
           variant="contained"
           color="primary"
-          onClick={handleUpdate}
           disabled={isLoading || parseFloat(threshold) === currentThreshold}
-          startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          sx={{ minWidth: 150 }} // Ancho mínimo para que el texto no se mueva mucho
         >
-          {isLoading ? 'Actualizando...' : 'Actualizar Umbral'}
+          {isLoading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Actualizar Umbral'
+          )}
         </Button>
+        {/* --- FIN DE LA CORRECCIÓN --- */}
       </Box>
     </Box>
   );

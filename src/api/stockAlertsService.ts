@@ -21,13 +21,14 @@ export const getActiveStockAlerts = async (): Promise<StockAlert[]> => {
     return response.data;
   } catch (error: unknown) {
     handleError(error, 'Error desconocido al obtener las alertas de stock.');
-    throw new Error('Error desconocido al obtener las alertas de stock.'); // Nunca se ejecuta, pero satisface al compilador
+    throw new Error('Error desconocido al obtener las alertas de stock.');
   }
 };
 
 export const markAlertAsViewed = async (alertId: number): Promise<void> => {
   try {
-    await axiosInstance.put(`${API_URL}/${alertId}/view`);
+    // CORRECCIÓN: Cambiado de .put a .post para coincidir con el @PostMapping del backend
+    await axiosInstance.post(`${API_URL}/${alertId}/view`);
   } catch (error: unknown) {
     handleError(error, 'Error desconocido al marcar la alerta como vista.');
   }
@@ -35,20 +36,14 @@ export const markAlertAsViewed = async (alertId: number): Promise<void> => {
 
 export const markAlertAsResolved = async (alertId: number): Promise<void> => {
   try {
-    await axiosInstance.put(`${API_URL}/${alertId}/resolve`);
+    // CORRECCIÓN: Cambiado de .put a .post para coincidir con el @PostMapping del backend
+    await axiosInstance.post(`${API_URL}/${alertId}/resolve`);
   } catch (error: unknown) {
     handleError(error, 'Error desconocido al resolver la alerta.');
   }
 };
 
-// --- FUNCIONES AÑADIDAS PARA SOLUCIONAR EL ERROR ---
-
-/**
- * Actualiza el umbral de alerta de stock para un Insumo.
- * @param insumoId - El ID del insumo a actualizar.
- * @param newThreshold - El nuevo valor numérico del umbral.
- * @returns Promise<string> - El mensaje de éxito del backend.
- */
+// --- Las funciones de actualizar umbral ya estaban bien ---
 export const updateInsumoThreshold = async (insumoId: number, newThreshold: number): Promise<string> => {
     try {
         const response = await axiosInstance.put<string>(`${API_URL}/threshold/insumo/${insumoId}`, {
@@ -57,17 +52,10 @@ export const updateInsumoThreshold = async (insumoId: number, newThreshold: numb
         return response.data;
     } catch (error: unknown) {
         handleError(error, `Error al actualizar el umbral para el insumo ID ${insumoId}.`);
-        // El siguiente return nunca se ejecutará, pero satisface al compilador
         return '';
     }
 };
 
-/**
- * Actualiza el umbral de alerta de stock para un Producto.
- * @param productoId - El ID del producto a actualizar.
- * @param newThreshold - El nuevo valor numérico del umbral.
- * @returns Promise<string> - El mensaje de éxito del backend.
- */
 export const updateProductoThreshold = async (productoId: number, newThreshold: number): Promise<string> => {
     try {
         const response = await axiosInstance.put<string>(`${API_URL}/threshold/producto/${productoId}`, {
@@ -76,7 +64,6 @@ export const updateProductoThreshold = async (productoId: number, newThreshold: 
         return response.data;
     } catch (error: unknown) {
         handleError(error, `Error al actualizar el umbral para el producto ID ${productoId}.`);
-        // El siguiente return nunca se ejecutará, pero satisface al compilador
         return ''; 
     }
 };
