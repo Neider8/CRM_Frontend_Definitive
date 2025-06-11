@@ -135,7 +135,7 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  const roles = ['Administrador', 'Gerente', 'Operario', 'Ventas'];
+  const roles = ['Gerente', 'Operario', 'Ventas'];
 
   return (
     <>

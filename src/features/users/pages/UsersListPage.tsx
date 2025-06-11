@@ -341,19 +341,19 @@ const UsersListPage: React.FC = () => {
       />
 
       {/* Nuevo Diálogo de confirmación para habilitar/deshabilitar */}
-      <ConfirmationDialog
-        open={openToggleStatusDialog}
-        onClose={() => setOpenToggleStatusDialog(false)}
-        onConfirm={confirmToggleUserStatus}
-        title={selectedUserToToggle?.habilitado ? 'Confirmar Deshabilitación' : 'Confirmar Habilitación'}
-        message={
-          selectedUserToToggle?.habilitado
-            ? `¿Estás seguro de que deseas deshabilitar al usuario '${selectedUserToToggle.nombreUsuario}'? Esto impedirá que inicie sesión.`
-            : `¿Estás seguro de que deseas habilitar al usuario '${selectedUserToToggle?.nombreUsuario}'? Esto le permitirá iniciar sesión.`
-        }
-        confirmText={selectedUserToToggle?.habilitado ? 'Deshabilitar' : 'Habilitar'}
-        confirmButtonColor={selectedUserToToggle?.habilitado ? 'error' : 'success'}
-      />
+        <ConfirmationDialog
+          open={openToggleStatusDialog}
+          onClose={() => setOpenToggleStatusDialog(false)}
+          onConfirm={confirmToggleUserStatus}
+          title={selectedUserToToggle?.habilitado ? 'Confirmar Deshabilitación' : 'Confirmar Habilitación'}
+          message={
+            selectedUserToToggle?.habilitado
+              ? `¿Estás seguro de que deseas deshabilitar al usuario '${selectedUserToToggle.nombreUsuario}'? Esto impedirá que inicie sesión.`
+              : `¿Estás seguro de que deseas habilitar al usuario '${selectedUserToToggle?.nombreUsuario}'? Esto le permitirá iniciar sesión.`
+          }
+          confirmText={selectedUserToToggle?.habilitado ? 'Deshabilitar' : 'Habilitar'}
+          confirmButtonColor="error"
+        />    
 
       <Snackbar
         open={!!successMessage || !!error} // Mostrar snackbar para éxito o error
