@@ -11,6 +11,9 @@ import { FaRegCalendarAlt } from 'react-icons/fa';
 import { IoPeople } from 'react-icons/io5';
 import { PiNutBold } from 'react-icons/pi';
 import { GiClothes } from 'react-icons/gi';
+import { FaPeopleCarry } from "react-icons/fa";
+import { GiSewingNeedle } from "react-icons/gi";
+import { HiArchiveBox } from "react-icons/hi2";
 
 interface SidebarProps {
   drawerWidth: number;
@@ -30,14 +33,14 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth }) => {
   const menuItems: MenuItemStructure[] = [
     { text: 'Dashboard', icon: <FaHouseChimney />, path: '/dashboard' },
     { text: 'Clientes', icon: <IoPeople />, path: '/clientes', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] },
-    { text: 'Proveedores', icon: <FaRegCalendarAlt />, path: '/proveedores', allowedRoles: ['Administrador', 'Gerente'] },
+    { text: 'Proveedores', icon: <FaPeopleCarry />, path: '/proveedores', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Productos', icon: <GiClothes />, path: '/productos' },
-    { text: 'Insumos', icon: <PiNutBold />, path: '/insumos', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
+    { text: 'Insumos', icon: <GiSewingNeedle />, path: '/insumos', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
     { text: 'Órdenes de Venta', icon: <FaListCheck />, path: '/ordenes-venta', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] },
-    { text: 'Órdenes de Compra', icon: <AiFillCalendar />, path: '/ordenes-compra', allowedRoles: ['Administrador', 'Gerente'] },
+    { text: 'Órdenes de Compra', icon: <FaListCheck />, path: '/ordenes-compra', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Órdenes de Producción', icon: <FaRegCalendarAlt />, path: '/ordenes-produccion', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
     { text: 'Inv. Productos', icon: <GiClothes />, path: '/inventario-productos', allowedRoles: ['Administrador', 'Gerente', 'Operario', 'Ventas'] },
-    { text: 'Inv. Insumos', icon: <PiNutBold />, path: '/inventario-insumos', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
+    { text: 'Inv. Insumos', icon: <HiArchiveBox />, path: '/inventario-insumos', allowedRoles: ['Administrador', 'Gerente', 'Operario'] },
     // { text: 'Pagos y Cobros', icon: <FaListCheck />, path: '/pagos-cobros', allowedRoles: ['Administrador', 'Gerente', 'Ventas'] }, // Eliminado
     { text: 'Usuarios', icon: <FaPersonCircleCheck />, path: '/usuarios', allowedRoles: ['Administrador', 'Gerente'] },
     { text: 'Empleados', icon: <IoPeople />, path: '/empleados', allowedRoles: ['Administrador', 'Gerente'] },
@@ -53,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth }) => {
   };
 
   return (
-    <Box className="sidebar" sx={{ width: '4.9rem' }}>
+    <Box className="sidebar" sx={{ width: '4rem' }}>
       <ul className="sidebar-list">
         {menuItems
           .filter(item => isUserAllowed(item.allowedRoles))

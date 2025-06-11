@@ -1,10 +1,11 @@
 .sidebar {
-  background-color: #fbf6ff;
   height: 100vh;
   overflow-x: hidden;
   position: fixed;
   transition: width 0.3s ease;
   opacity: 1; 
+  border-right: 1px solid #d1d5db;
+  background-color: #fefbff;
 }
 
 .sidebar:hover {
@@ -12,21 +13,23 @@
 }
 
 .sidebar-list {
+   margin-top: 3rem;
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
   margin-top: 5rem;
   padding: 0.5rem;
 }
 
 .sidebar-link {
+  font-size: 0.75rem;    
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 0.75rem;
   color: #334155;
   text-decoration: none;
   border-radius: 0.5rem;
@@ -63,36 +66,19 @@
   opacity: 1;
 }
 
-
- /* Header */
-.header {
+.sidebar-link .avatar-button {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background-color: #5033d8;
-  padding: 0.75rem 1.25rem;
-  color: white;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
-.logo {
-  font-size: 1.25rem;
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-}
-
-.menu-button {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  display: none;
-}
 
 @media (max-width: 768px) {
   .menu-button {
@@ -159,15 +145,59 @@
   transition: margin-left 0.3s ease;
 }
 
-.logotech {
-  width: 4rem;
-  height: 4rem;
-  object-fit: contain;
-}
-
 .split-text-custom {
   font-size: 1.5rem;
   font-weight: 600;
   color: white;
   white-space: nowrap;
 }
+
+.avatar-button {
+  background-color: white;
+  color: #5033d8;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 4rem !important; 
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .sidebar-link:hover,
+  .sidebar-link.active {
+    background-color: #edeafc;
+    color: #5033d8;
+    border: 1px solid #5033d8;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .sidebar-text {
+    display: none;
+  }
+}
+

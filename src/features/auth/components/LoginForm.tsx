@@ -1,30 +1,31 @@
-import React, { useState } from 'react'; // Importar useState
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../pages/LoginPage.module.css';
+import React, { useState } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import {
+  Box,
+  TextField,
+  Button,
+  CircularProgress,
+  Alert,
+  Typography,
+  IconButton,
+  InputAdornment,
+  Paper,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { loginUser } from '../../../api/authService';
 import type { LoginCredentials } from '../../../types/auth.types';
 import { useAuth } from '../../../contexts/AuthContext';
 
-// --- INICIO DE CAMBIOS ---
-import { IconButton } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-// --- FIN DE CAMBIOS ---
-
-
-export const LoginForm = () => {
-  const [credentials, setCredentials] = useState<LoginCredentials>({ nombreUsuario: '', contrasena: '' });
+export const LoginForm: React.FC = () => {
+  const [credentials, setCredentials] = useState<LoginCredentials>({
+    nombreUsuario: '',
+    contrasena: '',
+  });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
-  // --- INICIO DE CAMBIOS: Estado para visibilidad de contraseña ---
   const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-  // --- FIN DE CAMBIOS ---
-  
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -42,76 +43,116 @@ export const LoginForm = () => {
       const authTokenPayload = await loginUser(credentials);
       await login(authTokenPayload);
       navigate('/dashboard', { replace: true });
-
     } catch (err: unknown) {
-      console.error("Error capturado en el formulario:", err);
+      console.error('Error capturado en el formulario:', err);
       if (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string') {
         setError((err as any).message);
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Ocurrió un error inesperado.");
+        setError('Ocurrió un error inesperado.');
       }
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   return (
-    <div className={styles.formWrapper}>
-        <h1 className={styles.title}>Inicio de Sesion</h1>
-        <p className={styles.subtitle}>Bienvenido</p>
-        <form noValidate onSubmit={handleSubmit}>
-            <div className={styles.inputGroup}>
-                <input
-                    type="text"
-                    id="nombreUsuario"
-                    name="nombreUsuario"
-                    className={styles.inputField}
-                    value={credentials.nombreUsuario}
-                    onChange={handleChange}
-                    placeholder="Nombre de usuario"
-                    required
-                    disabled={isLoading}
-                />
-            </div>
-            {/* --- INICIO DE CAMBIOS: Campo de contraseña actualizado --- */}
-            <div className={styles.passwordInputWrapper}>
-                <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="contrasena"
-                    name="contrasena"
-                    className={styles.inputField}
-                    value={credentials.contrasena}
-                    onChange={handleChange}
-                    placeholder="Contraseña"
-                    required
-                    disabled={isLoading}
-                />
+    <Paper
+      elevation={3}
+      sx={{
+        p: 4,
+        maxWidth: 500,
+        mx: 'auto',
+        mt: 8,
+        borderRadius: 3,
+        backgroundColor: '#fff',
+      }}
+    >
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Typography variant="h4" align="center" gutterBottom>
+          Inicio de Sesión
+        </Typography>
+        <Typography variant="subtitle1" align="center" gutterBottom>
+          Bienvenido
+        </Typography>
+
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          id="nombreUsuario"
+          label="Nombre de Usuario"
+          name="nombreUsuario"
+          autoComplete="username"
+          value={credentials.nombreUsuario}
+          onChange={handleChange}
+          disabled={isLoading}
+        />
+
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="contrasena"
+          label="Contraseña"
+          type={showPassword ? 'text' : 'password'}
+          id="contrasena"
+          autoComplete="current-password"
+          value={credentials.contrasena}
+          onChange={handleChange}
+          disabled={isLoading}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
-                  className={styles.passwordVisibilityIcon}
+                  edge="end"
+                  size="small"
+                  sx={{ padding: 0 }}
                 >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                 </IconButton>
-            </div>
-            {/* --- FIN DE CAMBIOS --- */}
-            <Link to="/forgot-password" className={styles.forgotPasswordLink}>
-                ¿Olvidaste contraseña?
-            </Link>
-            {error && <p className={styles.errorMessage}>{error}</p>}
-            <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                {isLoading ? 'Ingresando...' : 'Acceder'}
-            </button>
-            <p className={styles.registerText}>
-                ¿No tienes cuenta?{' '}
-                <Link to="/register" className={styles.registerLink}>
-                    Registrarse
-                </Link>
-            </p>
-        </form>
-    </div>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <Button
+          type="submit"
+          fullWidth
+          variant="contained"
+          sx={{
+            mt: 3,
+            mb: 2,
+            backgroundColor: '#5033d8',
+            '&:hover': {
+              backgroundColor: '#3f27b1',
+            },
+          }}
+          disabled={isLoading}
+        >
+          {isLoading ? <CircularProgress size={20} /> : 'Acceder'}
+        </Button>
+
+        <Typography variant="body2" align="center">
+          ¿No tienes una cuenta?{' '}
+          <RouterLink to="/register" style={{ textDecoration: 'none' }}>
+            <Typography component="span" color="primary" fontWeight={500}>
+              Regístrate aquí
+            </Typography>
+          </RouterLink>
+        </Typography>
+      </Box>
+    </Paper>
   );
 };

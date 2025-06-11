@@ -3,9 +3,10 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import RegisterForm from '../components/RegisterForm'; // Asegúrate de tener este componente creado
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined'; // Importa el icono
+import RegisterForm from '../components/RegisterForm';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button'; // Solo si lo necesitas aquí
 
 const RegisterPage: React.FC = () => {
   return (
@@ -15,14 +16,29 @@ const RegisterPage: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh', // Centrar verticalmente
-        bgcolor: 'background.default',
+        minHeight: '100vh',
+        backgroundColor: '#fbf6ff',
         p: 2,
       }}
     >
-      <Paper elevation={6} sx={{ p: { xs: 2, sm: 3, md: 4 }, width: '100%', maxWidth: 480, borderRadius: 2 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
+      <Paper
+        elevation={6}
+        sx={{
+          p: { xs: 2, sm: 3, md: 4 },
+          width: '100%',
+          maxWidth: 480,
+          borderRadius: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            mb: 2,
+          }}
+        >
+          <Avatar sx={{ m: 1, bgcolor: '#5033d8' }}>
             <PersonAddOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">

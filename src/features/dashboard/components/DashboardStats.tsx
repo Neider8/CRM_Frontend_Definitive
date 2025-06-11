@@ -1,11 +1,10 @@
 // src/features/dashboard/components/DashboardStats.tsx
 import React, { useEffect, useState } from 'react';
-import { getDashboardSummaryStats } from '../../../services/dashboardService'; // Ajusta la ruta
-import type { DashboardSummaryStats } from '../../../types/dashboard.types'; // Ajusta la ruta
-import { formatCurrency } from '../../../utils/formatting'; // Para formatear valores monetarios
+import { getDashboardSummaryStats } from '../../../services/dashboardService'; 
+import type { DashboardSummaryStats } from '../../../types/dashboard.types'; 
+import { formatCurrency } from '../../../utils/formatting'; 
 
-// REMOVED: import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Eliminada la importación de shadcn/ui Card
-import { Loader2, Users, Package, ShoppingCart, Factory } from 'lucide-react'; // Iconos de ejemplo
+import { Loader2, Users, Package, ShoppingCart, Factory } from 'lucide-react'; 
 
 const DashboardStats: React.FC = () => {
   const [stats, setStats] = useState<DashboardSummaryStats | null>(null);
@@ -48,7 +47,7 @@ const DashboardStats: React.FC = () => {
   }
 
   if (!stats) {
-    return null; // O un mensaje de "No hay datos disponibles"
+    return null;
   }
 
   return (
