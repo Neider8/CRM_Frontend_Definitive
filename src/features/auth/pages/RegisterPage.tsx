@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import RegisterForm from '../components/RegisterForm';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button'; // Solo si lo necesitas aquí
+import Button from '@mui/material/Button'; 
 
 const RegisterPage: React.FC = () => {
   return (

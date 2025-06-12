@@ -5,7 +5,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import {
   Box, TextField, Button, CircularProgress, Alert, Typography, Paper, Snackbar, Autocomplete
 } from '@mui/material';
-import type { ProductInventoryCreateRequest } from '../../../types/inventory.types';
+import type { SupplyInventoryCreateRequest } from '../../../types/inventory.types';
 import type { ProductSummary } from '../../../types/product.types'; // Para el Autocomplete de productos
 import { createProductInventory } from '../../../api/productInventoryService';
 import { getAllProducts } from '../../../api/productService'; // Para obtener la lista de productos
@@ -76,8 +76,9 @@ const ProductInventoryCreateForm: React.FC = () => {
     setFormError(null);
     setSnackbarMessage('');
 
-    const payload: ProductInventoryCreateRequest = {
-      idProducto: data.producto.idProducto,
+    const payload: SupplyInventoryCreateRequest = {
+      // Cambia 'productoId' por el nombre correcto según el tipo SupplyInventoryCreateRequest
+      productId: data.producto.idProducto,
       ubicacionInventario: data.ubicacionInventario,
       cantidadStock: Number(data.cantidadStock),
     };

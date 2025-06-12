@@ -1,16 +1,11 @@
 // src/api/userService.ts
 import axiosInstance from './axiosInstance';
-import type { UserInfo } from '../types/auth.types';
-import type { RegisterPayload } from '../types/auth.types'; // Usaremos RegisterPayload para la creación por admin
-import type { UsuarioUpdateRequest } from '../types/user.types'; // Crearemos este tipo
-import type { ChangePasswordRequest } from '../types/user.types'; // Crearemos este tipo
-import type { Page, PageableRequest } from '../types/page.types'; // Crearemos estos tipos
+import type { UserInfo, RegisterPayload } from '../types/auth.types';
+import type { UsuarioUpdateRequest, ChangePasswordRequest } from '../types/user.types';
+import type { Page, PageableRequest } from '../types/page.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
-/**
- * Obtiene una lista paginada de todos los usuarios.
- * Requiere rol ADMINISTRADOR o GERENTE en el backend.
- */
+// Requiere: ROL_ADMINISTRADOR o ROL_GERENTE.
 export const getAllUsuarios = async (params?: PageableRequest): Promise<Page<UserInfo>> => {
   try {
     const response = await axiosInstance.get<Page<UserInfo>>('/usuarios', { params });
@@ -23,10 +18,7 @@ export const getAllUsuarios = async (params?: PageableRequest): Promise<Page<Use
   }
 };
 
-/**
- * Obtiene un usuario por su ID.
- * Accesible por el propio usuario, o por ADMINISTRADOR/GERENTE.
- */
+// Accesible por el propio usuario, o por ROL_ADMINISTRADOR/ROL_GERENTE.
 export const getUsuarioById = async (id: number): Promise<UserInfo> => {
   try {
     const response = await axiosInstance.get<UserInfo>(`/usuarios/${id}`);
@@ -39,10 +31,7 @@ export const getUsuarioById = async (id: number): Promise<UserInfo> => {
   }
 };
 
-/**
- * Obtiene un usuario por su nombre de usuario.
- * Accesible por el propio usuario, o por ADMINISTRADOR/GERENTE.
- */
+// Accesible por el propio usuario, o por ROL_ADMINISTRADOR/ROL_GERENTE.
 export const getUsuarioByNombreUsuario = async (nombreUsuario: string): Promise<UserInfo> => {
   try {
     const response = await axiosInstance.get<UserInfo>(`/usuarios/username/${nombreUsuario}`);
@@ -55,12 +44,7 @@ export const getUsuarioByNombreUsuario = async (nombreUsuario: string): Promise<
   }
 };
 
-/**
- * Crea un nuevo usuario (ruta de administrador).
- * El backend espera un UsuarioCreateRequestDTO.
- * Reutilizamos RegisterPayload que tiene una estructura similar.
- * Requiere rol ADMINISTRADOR en el backend.
- */
+// Crea un usuario (ruta de admin), reutilizando el tipo `RegisterPayload`. Requiere: ROL_ADMINISTRADOR.
 export const createUsuarioAdmin = async (payload: RegisterPayload): Promise<UserInfo> => {
   try {
     const response = await axiosInstance.post<UserInfo>('/usuarios', payload);
@@ -73,11 +57,7 @@ export const createUsuarioAdmin = async (payload: RegisterPayload): Promise<User
   }
 };
 
-/**
- * Actualiza la información de un usuario.
- * El backend espera un UsuarioUpdateRequestDTO.
- * Permite al propio usuario (limitado) o a un ADMINISTRADOR (más campos).
- */
+// Actualiza un usuario. Accesible por el propio usuario (limitado) o por un ROL_ADMINISTRADOR.
 export const updateUsuarioAdmin = async (id: number, payload: UsuarioUpdateRequest): Promise<UserInfo> => {
   try {
     const response = await axiosInstance.put<UserInfo>(`/usuarios/${id}`, payload);
@@ -90,15 +70,10 @@ export const updateUsuarioAdmin = async (id: number, payload: UsuarioUpdateReque
   }
 };
 
-/**
- * Cambia la contraseña de un usuario.
- * El backend espera un ChangePasswordRequestDTO.
- * Si el usuario cambia su propia contraseña, debe proporcionar la contraseña actual.
- * Un administrador podría no necesitar la contraseña actual (a verificar en el backend si es el caso).
- */
+// Cambia la contraseña. El payload requiere `contrasenaActual` si el usuario lo hace por sí mismo.
+// El backend responde con un string de confirmación.
 export const changeUserPassword = async (idUsuario: number, payload: ChangePasswordRequest): Promise<string> => {
   try {
-    // El backend devuelve un string simple "Contraseña cambiada exitosamente."
     const response = await axiosInstance.post<string>(`/usuarios/${idUsuario}/change-password`, payload);
     return response.data;
   } catch (error: any) {
@@ -109,10 +84,7 @@ export const changeUserPassword = async (idUsuario: number, payload: ChangePassw
   }
 };
 
-/**
- * Elimina un usuario por su ID.
- * Requiere rol ADMINISTRADOR en el backend.
- */
+// Elimina un usuario. Requiere: ROL_ADMINISTRADOR.
 export const deleteUsuarioAdmin = async (id: number): Promise<void> => {
   try {
     await axiosInstance.delete(`/usuarios/${id}`);

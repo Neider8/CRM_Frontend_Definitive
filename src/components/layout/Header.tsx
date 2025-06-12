@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Box, IconButton, Avatar,
-  Tooltip, Menu, MenuItem, ListItemIcon, Divider
+  Tooltip, Menu, MenuItem, ListItemIcon, Divider, Badge
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { FaBell } from "react-icons/fa";
+import { gsap } from "gsap";
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import SplitText from "../common/SplitText";
-import { gsap } from "gsap";
 import logo from "../../assets/logo.png";
-import { FaBell } from "react-icons/fa";
-import { Badge } from "@mui/material";
-
-// --- INICIO Bloque de Alertas ---
 import { getActiveStockAlerts } from '../../api/stockAlertsService';
 import type { StockAlert } from '../../types/stock.types';
 import AlertsPanel from '../alerts/AlertsPanel';
-// --- FIN Bloque de Alertas ---
 
 interface HeaderProps {
   onDrawerToggle?: () => void;
@@ -46,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
 
   useEffect(() => {
     fetchAlerts();
-    const intervalId = setInterval(fetchAlerts, 60000);
+    const intervalId = setInterval(fetchAlerts, 60000); // Polling cada 60 segundos
     return () => clearInterval(intervalId);
   }, [user]);
 
@@ -108,7 +104,6 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        {/* IZQUIERDA */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <IconButton
             color="inherit"
@@ -127,7 +122,6 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
           />
         </Box>
 
-        {/* CENTRO */}
         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
           <SplitText
             text="BIENVENIDOS A TECH 360"
@@ -145,21 +139,19 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
           />
         </Box>
 
-        {/* DERECHA */}
         {user ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            {/* Campana de notificaciones */}
             <Tooltip title="Ver notificaciones">
-            <IconButton onClick={handleOpenAlertsMenu} sx={{ color: 'inherit' }}>
-              <Badge
-                color="error"
-                variant={newAlertsCount > 0 ? "standard" : "dot"}
-                badgeContent={newAlertsCount > 0 ? newAlertsCount : null}
-                overlap="circular"
-              >
-                <FaBell size={20} />
-              </Badge>
-            </IconButton>
+              <IconButton onClick={handleOpenAlertsMenu} sx={{ color: 'inherit' }}>
+                <Badge
+                  color="error"
+                  variant={newAlertsCount > 0 ? "standard" : "dot"}
+                  badgeContent={newAlertsCount > 0 ? newAlertsCount : null}
+                  overlap="circular"
+                >
+                  <FaBell size={20} />
+                </Badge>
+              </IconButton>
             </Tooltip>
             <Menu
               anchorEl={anchorElAlerts}
@@ -190,7 +182,6 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
               />
             </Menu>
 
-            {/* Menú de usuario */}
             <Tooltip title="Abrir opciones de usuario">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar sx={{ bgcolor: 'secondary.main' }}>

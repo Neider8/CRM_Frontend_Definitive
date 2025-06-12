@@ -8,15 +8,11 @@ import {
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { es } from 'date-fns/locale/es';
-import type { PaymentReceiptCreateRequest } from '../../../types/transaction.types';
 import type { SalesOrderSummary } from '../../../types/salesOrder.types';
 import type { PurchaseOrderSummary } from '../../../types/purchaseOrder.types';
-import { createPaymentReceipt } from '../../../api/paymentReceiptService';
 import { getAllSalesOrders } from '../../../api/salesOrderService';
 import { getAllPurchaseOrders } from '../../../api/purchaseOrderService';
 import { useNavigate } from 'react-router-dom';
-import type { ApiErrorResponseDTO } from '../../../types/error.types';
-import { formatISO } from 'date-fns';
 
 interface FormInputs {
     tipoTransaccion: 'Pago' | 'Cobro';
@@ -155,58 +151,11 @@ const PaymentReceiptCreateForm: React.FC = () => {
 
         setValidationErrors(currentValidationErrors);
 
-        if (Object.keys(currentValidationErrors).length > 0) {
-            setLoading(false);
-            return;
-        }
-
-        const payload: PaymentReceiptCreateRequest = {
-            tipoTransaccion: localTipoTransaccion,
-            idOrdenVenta: localTipoTransaccion === 'Cobro' && localOrdenVenta ? localOrdenVenta.idOrdenVenta : null,
-            idOrdenCompra: localTipoTransaccion === 'Pago' && localOrdenCompra ? localOrdenCompra.idOrdenCompra : null,
-            fechaPagoCobro: formatISO(localFechaPagoCobro!, { representation: 'date' }),
-            metodoPago: localMetodoPago,
-            montoTransaccion: Number(localMontoTransaccion),
-            referenciaTransaccion: localReferenciaTransaccion || null,
-            estadoTransaccion: localEstadoTransaccion,
-            observacionesTransaccion: localObservacionesTransaccion || null,
+            if (Object.keys(currentValidationErrors).length > 0) {
+                setLoading(false);
+                return;
+            }
         };
-
-        try {
-            await createPaymentReceipt(payload);
-            setSnackbarMessage(`Transacción de ${payload.tipoTransaccion.toLowerCase()} registrada exitosamente.`);
-            setSnackbarOpen(true);
-            reset({
-                tipoTransaccion: 'Cobro',
-                ordenVenta: null,
-                ordenCompra: null,
-                fechaPagoCobro: new Date(),
-                metodoPago: 'Transferencia Bancaria',
-                estadoTransaccion: 'Pendiente',
-                observacionesTransaccion: '',
-                referenciaTransaccion: '',
-                montoTransaccion: undefined,
-            });
-            setLocalTipoTransaccion('Cobro');
-            setLocalOrdenVenta(null);
-            setLocalOrdenCompra(null);
-            setLocalFechaPagoCobro(new Date());
-            setLocalMetodoPago('Transferencia Bancaria');
-            setLocalMontoTransaccion(undefined);
-            setLocalReferenciaTransaccion('');
-            setLocalEstadoTransaccion('Pendiente');
-            setLocalObservacionesTransaccion('');
-            setTimeout(() => {
-                navigate('/pagos-cobros');
-            }, 2500);
-        } catch (err: any) {
-            console.error(`Error al registrar ${payload.tipoTransaccion.toLowerCase()}:`, err);
-            const apiError = err as ApiErrorResponseDTO;
-            setFormError(apiError?.message || `Error al registrar la transacción.`);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleCloseSnackbar = () => setSnackbarOpen(false);
     const tipoTransaccionOptions: Array<FormInputs['tipoTransaccion']> = ['Cobro', 'Pago'];

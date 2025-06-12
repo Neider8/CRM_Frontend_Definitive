@@ -28,7 +28,7 @@ const ProductTypeDistributionChart: React.FC<ProductTypeDistributionChartProps> 
     datasets: [
       {
         label: 'Distribución de Productos por Tipo',
-        data: [300, 150, 100, 80, 120], // Datos de ejemplo
+        data: [300, 150, 100, 80, 120], 
         backgroundColor: [
           'rgba(255, 99, 132, 0.8)',
           'rgba(54, 162, 235, 0.8)',

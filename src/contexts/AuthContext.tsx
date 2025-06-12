@@ -67,8 +67,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('userInfo');
     setToken(null);
     setUser(null);
-    // Si prefieres una redirección inmediata, puedes descomentar esto:
-    // window.location.href = '/login';
   };
 
   return (

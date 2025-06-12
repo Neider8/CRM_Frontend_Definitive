@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import type { ChartOptions, ChartData } from 'chart.js';
-import { Paper, Typography, Box } from '@mui/material';
+import { Paper, Box } from '@mui/material';
 
 ChartJS.register(
   CategoryScale,
@@ -23,24 +23,24 @@ ChartJS.register(
 );
 
 interface SalesOrderStatusChartProps {
-  // En una aplicación real, pasarías los datos como props
+  // TODO: Recibir los datos del dashboard como props en lugar de usar datos simulados.
   // data: { pendiente: number, confirmada: number, enProduccion: number, entregada: number, anulada: number };
 }
 
-const SalesOrderStatusChart: React.FC<SalesOrderStatusChartProps> = (/*props*/) => {
-  // Datos simulados
+const SalesOrderStatusChart: React.FC<SalesOrderStatusChartProps> = () => {
+  // Datos simulados para la visualización.
   const data: ChartData<'bar'> = {
     labels: ['Pendiente', 'Confirmada', 'En Producción', 'Entregada', 'Anulada'],
     datasets: [
       {
         label: 'Cantidad de Órdenes de Venta',
-        data: [12, 19, 7, 5, 2], // Datos de ejemplo
+        data: [12, 19, 7, 5, 2],
         backgroundColor: [
-          'rgba(255, 159, 64, 0.7)', // Naranja
-          'rgba(54, 162, 235, 0.7)', // Azul
-          'rgba(153, 102, 255, 0.7)',// Púrpura
-          'rgba(75, 192, 192, 0.7)', // Verde-Azul
-          'rgba(255, 99, 132, 0.7)',  // Rojo
+          'rgba(255, 159, 64, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
         ],
         borderColor: [
           'rgba(255, 159, 64, 1)',
@@ -87,7 +87,7 @@ const SalesOrderStatusChart: React.FC<SalesOrderStatusChartProps> = (/*props*/) 
         y: {
             beginAtZero: true,
             ticks: {
-                stepSize: 1, // O ajusta según tus datos
+                stepSize: 1,
             }
         }
     }

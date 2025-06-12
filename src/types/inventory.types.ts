@@ -12,6 +12,8 @@ export interface InventarioInsumo {
   umbralMinimoStock: number; // Campo clave para las alertas
 }
 
+
+
 // INVENTARIO DE PRODUCTOS
 export interface InventarioProducto {
   idInventarioProducto: number;

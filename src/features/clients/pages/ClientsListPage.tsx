@@ -81,7 +81,7 @@ const ClientsListPage: React.FC = () => {
         await deleteClient(selectedClientIdToDelete);
         setOpenDeleteDialog(false);
         setSuccessMessage(`Cliente '${selectedClientNameToDelete}' eliminado correctamente.`);
-        fetchClients(page, rowsPerPage); // Recargar
+        fetchClients(page, rowsPerPage);
       } catch (err: any) {
         setError(err.message || `Error al eliminar el cliente '${selectedClientNameToDelete}'.`);
         setOpenDeleteDialog(false);
@@ -108,7 +108,7 @@ const ClientsListPage: React.FC = () => {
     // Implementar Skeletons si se desea
     return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
   }
-  if (!canViewClients && !loading && !error) { // Si ya terminó de cargar y no tiene permiso
+  if (!canViewClients && !loading && !error) { 
     return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
   }
   if (error && !clientsPage?.content.length) { // Si hubo un error y no hay clientes para mostrar

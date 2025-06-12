@@ -38,9 +38,7 @@ const StockThresholdConfigurator: React.FC<StockThresholdConfiguratorProps> = ({
       } else {
         await updateProductoThreshold(itemId, numericThreshold);
       }
-      if (onThresholdUpdate) {
-        onThresholdUpdate(numericThreshold);
-      }
+      onThresholdUpdate(numericThreshold);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'No se pudo actualizar el umbral.';
       console.error("Error updating threshold:", err);
@@ -71,13 +69,12 @@ const StockThresholdConfigurator: React.FC<StockThresholdConfiguratorProps> = ({
           error={!!error}
           helperText={error || `Umbral actual: ${currentThreshold}`}
         />
-        {/* --- INICIO DE LA CORRECCIÓN --- */}
         <Button
           type="submit"
           variant="contained"
           color="primary"
           disabled={isLoading || parseFloat(threshold) === currentThreshold}
-          sx={{ minWidth: 150 }} // Ancho mínimo para que el texto no se mueva mucho
+          sx={{ minWidth: 150 }}
         >
           {isLoading ? (
             <CircularProgress size={24} color="inherit" />
@@ -85,7 +82,6 @@ const StockThresholdConfigurator: React.FC<StockThresholdConfiguratorProps> = ({
             'Actualizar Umbral'
           )}
         </Button>
-        {/* --- FIN DE LA CORRECCIÓN --- */}
       </Box>
     </Box>
   );

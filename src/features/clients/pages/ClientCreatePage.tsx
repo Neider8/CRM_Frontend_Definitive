@@ -10,7 +10,7 @@ const ClientCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 
-  // Permisos basados en ClienteController: Admin, Ventas o PERMISO_CREAR_CLIENTES
+  // Define si el usuario actual puede crear clientes (requiere rol Administrador o Ventas).
   const canCreate = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Ventas';
 
   if (!canCreate) {

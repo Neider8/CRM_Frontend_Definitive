@@ -6,7 +6,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
   Box, CircularProgress, Alert, Snackbar, MenuItem, Typography
 } from '@mui/material';
-import type { ProductMovementCreateRequest } from '../../../types/inventory.types';
+import type { SupplyMovementCreateRequest } from '../../../types/inventory.types';
 import { registerProductMovement } from '../../../api/productInventoryService';
 import type { ApiErrorResponseDTO } from '../../../types/error.types';
 
@@ -78,8 +78,8 @@ const ProductMovementCreateModal: React.FC<ProductMovementCreateModalProps> = ({
     setLoading(true);
     setFormError(null);
 
-    const payload: ProductMovementCreateRequest = {
-      idInventarioProducto: inventoryId,
+    const payload: SupplyMovementCreateRequest = {
+      inventarioProductoId: inventoryId,
       tipoMovimiento: data.tipoMovimiento,
       cantidadMovimiento: Number(data.cantidadMovimiento),
       descripcionMovimiento: data.descripcionMovimiento || null,

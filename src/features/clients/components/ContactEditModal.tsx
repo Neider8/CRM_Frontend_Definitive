@@ -32,8 +32,8 @@ const ContactEditModal: React.FC<ContactEditModalProps> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty }, // Usar isDirty
     reset,
+    formState: { errors, isDirty }, 
   } = useForm<ContactCreateRequest>({ // El payload de actualización es el mismo que el de creación para contactos
     defaultValues: { // Se setean en useEffect
       nombreContacto: '',

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ApiErrorResponseDTO } from '../../../types/error.types';
 
 interface ClientEditFormProps {
-  clientData: ClientDetails; // Datos del cliente a editar
+  clientData: ClientDetails; 
 }
 
 const ClientEditForm: React.FC<ClientEditFormProps> = ({ clientData }) => {

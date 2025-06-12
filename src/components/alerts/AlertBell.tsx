@@ -2,7 +2,7 @@ import React from 'react';
 import { FaBell } from 'react-icons/fa'; // Ícono de campana de react-icons
 
 interface AlertBellProps {
-  newAlertsCount: number; // Recibe el conteo del componente padre
+  newAlertsCount: number; 
   onClick: () => void;    // Función para abrir/cerrar el panel de alertas
 }
 

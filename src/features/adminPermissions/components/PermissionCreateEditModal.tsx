@@ -44,7 +44,6 @@ const PermissionCreateEditModal: React.FC<PermissionCreateEditModalProps> = ({
     resolver: yupResolver(permissionSchema),
     defaultValues: {
       nombrePermiso: '',
-      // descripcionPermiso: '',
     },
   });
 
@@ -53,10 +52,10 @@ const PermissionCreateEditModal: React.FC<PermissionCreateEditModalProps> = ({
       if (isEditMode && existingPermission) {
         reset({
           nombrePermiso: existingPermission.nombrePermiso,
-          // descripcionPermiso: existingPermission.descripcionPermiso || '',
+
         });
       } else {
-        reset({ nombrePermiso: '' /*, descripcionPermiso: ''*/ });
+        reset({ nombrePermiso: ''  });
       }
     }
     if (!open) {
@@ -117,26 +116,13 @@ const PermissionCreateEditModal: React.FC<PermissionCreateEditModalProps> = ({
             helperText={errors.nombrePermiso?.message || "Usar MAYÚSCULAS y guion bajo."}
             disabled={loading}
           />
-          {/* <TextField
-            fullWidth
-            margin="dense"
-            id="descripcionPermiso"
-            label="Descripción (Opcional)"
-            multiline
-            rows={2}
-            {...register('descripcionPermiso')}
-            error={!!errors.descripcionPermiso}
-            helperText={errors.descripcionPermiso?.message}
-            disabled={loading}
-          /> 
-          */}
         </Box>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={handleCloseModal} color="inherit" disabled={loading}>Cancelar</Button>
         <Button
           type="submit"
-          form="permission-form" // Asocia este botón con el form
+          form="permission-form" 
           variant="contained"
           disabled={loading || (isEditMode && !isDirty)}
           startIcon={loading ? <CircularProgress size={20} /> : null}
