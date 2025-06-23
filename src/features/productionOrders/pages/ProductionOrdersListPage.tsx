@@ -7,7 +7,7 @@ import {
 import MuiLink from '@mui/material/Link';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing'; // Icono para órdenes de producción
+import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { getAllProductionOrders } from '../../../api/productionOrderService';
 import type { ProductionOrderPageableRequest, PaginatedProductionOrders } from '../../../types/productionOrder.types';
@@ -59,26 +59,26 @@ const ProductionOrdersListPage: React.FC = () => {
   const canCreateProductionOrders = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
   const canViewProductionOrders = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente' || currentUser?.rolUsuario === 'Operario';
 
-  if (loading && !productionOrdersPage?.content.length && !error) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
-  }
-  if (!canViewProductionOrders && !loading && !error) {
-     return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
-  }
-  if (error && !productionOrdersPage?.content.length) {
-    return <Container maxWidth="md"><Alert severity="error" sx={{mt:2}}>{error}</Alert></Container>;
-  }
-
   const getStatusChipColor = (status: string): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
     switch (status?.toLowerCase()) {
         case 'pendiente': return 'warning';
         case 'en proceso': return 'info';
         case 'terminada': return 'success';
-        case 'retrasada': return 'error'; // O un color diferente si prefieres
+        case 'retrasada': return 'error';
         case 'anulada': return 'error';
         default: return 'default';
     }
-};
+  };
+  
+  if (loading && !productionOrdersPage?.content.length && !error) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
+  }
+  if (!canViewProductionOrders && !loading && !error) {
+      return <Container maxWidth="md"><Alert severity="warning" sx={{mt:2}}>No tienes permiso para ver esta página.</Alert></Container>;
+  }
+  if (error && !productionOrdersPage?.content.length) {
+    return <Container maxWidth="md"><Alert severity="error" sx={{mt:2}}>{error}</Alert></Container>;
+  }
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden', p: {xs: 1, sm: 2} }}>
@@ -117,20 +117,31 @@ const ProductionOrdersListPage: React.FC = () => {
                   <TableCell align="center">Acciones</TableCell>
                 </TableRow>
               </TableHead>
+              
+              {/* === INICIO DEL BLOQUE CORREGIDO === */}
               <TableBody>
                 {productionOrdersPage.content.map((order) => (
                   <TableRow hover key={order.idOrdenProduccion}>
                     <TableCell>{order.idOrdenProduccion}</TableCell>
+                    
+                    {/* CELDA DE ID O.V. CORREGIDA */}
                     <TableCell>
+                      {order.ordenVenta ? (
                         <MuiLink component={RouterLink} to={`/ordenes-venta/${order.ordenVenta.idOrdenVenta}`}>
-                            {order.ordenVenta.idOrdenVenta}
+                          {order.ordenVenta.idOrdenVenta}
                         </MuiLink>
+                      ) : (
+                        'N/A' // Muestra 'N/A' si no hay orden de venta
+                      )}
                     </TableCell>
-                    <TableCell>{order.ordenVenta.clienteNombre}</TableCell>
-                    <TableCell>{format(parseISO(order.fechaCreacion), 'dd/MM/yyyy HH:mm')}</TableCell>
-                    <TableCell>{order.fechaFinEstimadaProduccion ? format(parseISO(order.fechaFinEstimadaProduccion), 'dd/MM/yyyy') : 'N/A'}</TableCell>
+
+                    {/* CELDA DE CLIENTE CORREGIDA */}
+                    <TableCell>{order.ordenVenta?.clienteNombre ?? 'N/A'}</TableCell>
+
+                    <TableCell>{format(parseISO(order.fechaCreacion), 'dd/MM/yyyy HH:mm', { locale: es })}</TableCell>
+                    <TableCell>{order.fechaFinEstimadaProduccion ? format(parseISO(order.fechaFinEstimadaProduccion), 'dd/MM/yyyy', { locale: es }) : 'N/A'}</TableCell>
                     <TableCell>
-                        <Chip label={order.estadoProduccion} color={getStatusChipColor(order.estadoProduccion)} size="small" />
+                      <Chip label={order.estadoProduccion} color={getStatusChipColor(order.estadoProduccion)} size="small" />
                     </TableCell>
                     <TableCell align="center">
                       <Tooltip title="Ver Detalles y Tareas">
@@ -142,6 +153,8 @@ const ProductionOrdersListPage: React.FC = () => {
                   </TableRow>
                 ))}
               </TableBody>
+              {/* === FIN DEL BLOQUE CORREGIDO === */}
+
             </Table>
           </TableContainer>
           <TablePagination
@@ -157,7 +170,7 @@ const ProductionOrdersListPage: React.FC = () => {
           />
         </>
       ) : (
-         !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron órdenes de producción.</Typography>
+          !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron órdenes de producción.</Typography>
       )}
     </Paper>
   );

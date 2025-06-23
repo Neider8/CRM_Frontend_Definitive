@@ -22,17 +22,10 @@ import type { ProductionOrderDetails, ProductionTaskDetails } from '../../../typ
 import { useAuth } from '../../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { formatCurrency } from '../../../utils/formatting';
 import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
 import ProductionOrderHeaderEditModal from '../components/ProductionOrderHeaderEditModal';
 import ProductionTaskCreateModal from '../components/ProductionTaskCreateModal';
-import ProductionTaskEditModal from '../components/ProductionTaskEditModal'; // Importar
-
-// --- FUNCIÓN PARA QUITAR OFFSET DE FECHAS ---
-const stripOffset = (dateString: string | null | undefined) => {
-    if (!dateString) return null;
-    return dateString.substring(0, 19);
-};
+import ProductionTaskEditModal from '../components/ProductionTaskEditModal';
 
 const ProductionOrderDetailPage: React.FC = () => {
     const { orderId: orderIdParam } = useParams<{ orderId: string }>();
@@ -51,8 +44,6 @@ const ProductionOrderDetailPage: React.FC = () => {
     const [selectedTaskToDelete, setSelectedTaskToDelete] = useState<ProductionTaskDetails | null>(null);
     const [openEditHeaderModal, setOpenEditHeaderModal] = useState(false);
     const [openCreateTaskModal, setOpenCreateTaskModal] = useState(false);
-
-    // NUEVO: Estado para edición de tarea
     const [editingTask, setEditingTask] = useState<ProductionTaskDetails | null>(null);
 
     const productionOrderId = parseInt(orderIdParam || '', 10);
@@ -133,26 +124,15 @@ const ProductionOrderDetailPage: React.FC = () => {
         setSuccessMessage(null);
         setError(null);
     };
+    
+    const handleOrderHeaderUpdated = () => fetchProductionOrder();
+    const handleTaskCreated = () => fetchProductionOrder();
+    const handleTaskUpdated = () => fetchProductionOrder();
 
-    const handleOrderHeaderUpdated = () => {
-        fetchProductionOrder();
-    };
-
-    const handleTaskCreated = () => {
-        fetchProductionOrder();
-    };
-
-    // NUEVO: Cuando se actualiza una tarea, recargar la OP y cerrar modal
-    const handleTaskUpdated = () => {
-        fetchProductionOrder();
-    };
-
-    // NUEVO: Al hacer click en editar tarea
     const handleEditTaskClick = (task: ProductionTaskDetails) => {
         setEditingTask(task);
     };
 
-    // Permisos
     const canEditHeader = (status?: string) =>
         currentUser && status &&
         (currentUser.rolUsuario === 'Administrador' || currentUser.rolUsuario === 'Gerente') &&
@@ -221,7 +201,6 @@ const ProductionOrderDetailPage: React.FC = () => {
                 </Snackbar>
             }
 
-            {/* Información de la Cabecera de la Orden */}
             <Paper elevation={3} sx={{ p: { xs: 2, md: 3 }, mb: 3 }}>
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: {xs: 2, md: 3} }}>
                     {/* Columna Izquierda: Datos de la O.P. */}
@@ -242,18 +221,29 @@ const ProductionOrderDetailPage: React.FC = () => {
                         </Box>
                     </Box>
 
-                    {/* Columna Derecha: Orden de Venta Asociada */}
+                    {/* === INICIO DEL BLOQUE CORREGIDO === */}
                     <Box sx={{ width: { xs: '100%', md: 'calc(50% - 12px)' }, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                         <Typography variant="h6" gutterBottom sx={{display:'flex', alignItems:'center'}}><ShoppingCartIcon sx={{mr:1}} color="action"/>Orden de Venta Asociada</Typography>
                         <Divider sx={{mb:1}}/>
-                        <Typography variant="body2" component="span">ID O.V.:
-                            <MuiLink component={RouterLink} to={`/ordenes-venta/${order.ordenVenta.idOrdenVenta}`} sx={{ml:0.5, fontWeight:'bold'}}>
-                                #{order.ordenVenta.idOrdenVenta}
-                            </MuiLink>
-                        </Typography>
-                        <Typography variant="body2" component="span">Cliente: {order.ordenVenta.clienteNombre}</Typography>
-                        <Typography variant="body2" component="span">Fecha Pedido O.V.: {format(parseISO(order.ordenVenta.fechaPedido), 'dd/MM/yyyy HH:mm', { locale: es })}</Typography>
+                        
+                        {order.ordenVenta ? (
+                            <>
+                                <Typography variant="body2" component="span">ID O.V.:
+                                    <MuiLink component={RouterLink} to={`/ordenes-venta/${order.ordenVenta.idOrdenVenta}`} sx={{ml:0.5, fontWeight:'bold'}}>
+                                        #{order.ordenVenta.idOrdenVenta}
+                                    </MuiLink>
+                                </Typography>
+                                <Typography variant="body2" component="span">Cliente: {order.ordenVenta.clienteNombre}</Typography>
+                                <Typography variant="body2" component="span">Fecha Pedido O.V.: {format(parseISO(order.ordenVenta.fechaPedido), 'dd/MM/yyyy HH:mm', { locale: es })}</Typography>
+                            </>
+                        ) : (
+                            <Typography variant="body2" color="text.secondary" sx={{mt:1}}>
+                                No hay una orden de venta asociada a esta orden de producción.
+                            </Typography>
+                        )}
                     </Box>
+                    {/* === FIN DEL BLOQUE CORREGIDO === */}
+                    
                 </Box>
             </Paper>
 
@@ -352,7 +342,6 @@ const ProductionOrderDetailPage: React.FC = () => {
                 confirmText="Eliminar Tarea"
             />
 
-            {/* Modal para editar cabecera de la orden de producción */}
             {order && (
                 <ProductionOrderHeaderEditModal
                     open={openEditHeaderModal}
@@ -362,7 +351,6 @@ const ProductionOrderDetailPage: React.FC = () => {
                 />
             )}
 
-            {/* Modal para crear tarea de producción */}
             {order && (
                 <ProductionTaskCreateModal
                     open={openCreateTaskModal}
@@ -371,8 +359,7 @@ const ProductionOrderDetailPage: React.FC = () => {
                     onTaskCreated={handleTaskCreated}
                 />
             )}
-
-            {/* Modal para editar tarea de producción */}
+            
             {order && editingTask && (
                 <ProductionTaskEditModal
                     open={!!editingTask}

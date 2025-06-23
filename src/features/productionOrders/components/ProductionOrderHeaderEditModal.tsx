@@ -1,6 +1,6 @@
 // src/features/productionOrders/components/ProductionOrderHeaderEditModal.tsx
 import React, { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import type { SubmitHandler } from 'react-hook-form';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField,
@@ -41,21 +41,10 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
     const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
     const {
-        control,
-        register,
         handleSubmit,
-        formState: { isDirty },
-        reset,
-        watch, // Para observar fechas si es necesario para lógica condicional
-        trigger, // Para re-validar
-        getValues, // Para obtener valores para validaciones cruzadas
     } = useForm<ProductionOrderHeaderUpdateRequest>({
         defaultValues: {},
     });
-
-    const watchedFechaInicio = watch('fechaInicioProduccion');
-    const watchedFechaFinEstimada = watch('fechaFinEstimadaProduccion');
-
 
     useEffect(() => {
         if (orderData && open) {
@@ -66,7 +55,7 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
             setLocalObservacionesProduccion(orderData.observacionesProduccion || null);
         }
         if (!open) {
-            setFormError(null); // Limpiar errores cuando se cierra
+            setFormError(null);
             setValidationErrors({});
         }
     }, [orderData, open]);
@@ -129,14 +118,12 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
             return;
         }
 
-
         const isFormDirty =
-            (orderData.fechaInicioProduccion ? parseISO(String(orderData.fechaInicioProduccion))?.toISOString() : null) !== (localFechaInicioProduccion ? localFechaInicioProduccion.toISOString().split('T')[0] : null) ||
-            (orderData.fechaFinEstimadaProduccion ? parseISO(String(orderData.fechaFinEstimadaProduccion))?.toISOString() : null) !== (localFechaFinEstimadaProduccion ? localFechaFinEstimadaProduccion.toISOString().split('T')[0] : null) ||
-            (orderData.fechaFinRealProduccion ? parseISO(String(orderData.fechaFinRealProduccion))?.toISOString() : null) !== (localFechaFinRealProduccion ? localFechaFinRealProduccion.toISOString().split('T')[0] : null) ||
+            (orderData.fechaInicioProduccion ? parseISO(String(orderData.fechaInicioProduccion))?.toISOString().split('T')[0] : null) !== (localFechaInicioProduccion ? formatISO(localFechaInicioProduccion, { representation: 'date' }) : null) ||
+            (orderData.fechaFinEstimadaProduccion ? parseISO(String(orderData.fechaFinEstimadaProduccion))?.toISOString().split('T')[0] : null) !== (localFechaFinEstimadaProduccion ? formatISO(localFechaFinEstimadaProduccion, { representation: 'date' }) : null) ||
+            (orderData.fechaFinRealProduccion ? parseISO(String(orderData.fechaFinRealProduccion))?.toISOString().split('T')[0] : null) !== (localFechaFinRealProduccion ? formatISO(localFechaFinRealProduccion, { representation: 'date' }) : null) ||
             orderData.estadoProduccion !== localEstadoProduccion ||
             orderData.observacionesProduccion !== localObservacionesProduccion;
-
 
         if (!isFormDirty) {
             setSnackbarMessage("No se realizaron cambios.");
@@ -145,6 +132,7 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
             onClose();
             return;
         }
+
         setLoading(true);
         setFormError(null);
 
@@ -180,12 +168,11 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
     const handleCloseSnackbar = () => setSnackbarOpen(false);
 
     const allowedStates: Array<ProductionOrderHeaderUpdateRequest['estadoProduccion']> = ['Pendiente', 'En Proceso', 'Terminada', 'Retrasada', 'Anulada'];
-    // Lógica para deshabilitar estados según el estado actual
+    
     const isStateChangeDisabled = (currentState: string, newState: string | undefined) => {
-        if (!newState) return false; // Si no se intenta cambiar, no está deshabilitado
+        if (!newState) return false;
         if (currentState === 'Terminada' && newState !== 'Terminada') return true;
         if (currentState === 'Anulada' && newState !== 'Anulada') return true;
-        // Añadir más reglas si es necesario
         return false;
     };
 
@@ -196,9 +183,19 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
                 <Dialog open={open} onClose={handleCloseModal} maxWidth="sm" fullWidth disableEscapeKeyDown={loading}>
                     <DialogTitle>Editar Cabecera de Orden de Producción #{orderData.idOrdenProduccion}</DialogTitle>
                     <DialogContent>
-                        <Typography variant="subtitle1" gutterBottom>
-                            Orden de Venta Asoc.: <strong>#{orderData.ordenVenta.idOrdenVenta}</strong> ({orderData.ordenVenta.clienteNombre})
-                        </Typography>
+                        
+                        {/* === INICIO DEL BLOQUE CORREGIDO === */}
+                        {orderData.ordenVenta ? (
+                            <Typography variant="subtitle1" gutterBottom>
+                                Orden de Venta Asoc.: <strong>#{orderData.ordenVenta.idOrdenVenta}</strong> ({orderData.ordenVenta.clienteNombre})
+                            </Typography>
+                        ) : (
+                            <Typography variant="subtitle1" gutterBottom color="text.secondary">
+                                No hay orden de venta asociada.
+                            </Typography>
+                        )}
+                        {/* === FIN DEL BLOQUE CORREGIDO === */}
+                        
                         {formError && <Alert severity="error" sx={{ mb: 2, mt: 1 }}>{formError}</Alert>}
                         <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} noValidate sx={{ mt: 2 }}>
                             <Box sx={{ mb: 2 }}>
@@ -260,7 +257,7 @@ const ProductionOrderHeaderEditModal: React.FC<ProductionOrderHeaderEditModalPro
                                 label="Observaciones (Opcional)"
                                 multiline
                                 rows={3}
-                                value={localObservacionesProduccion}
+                                value={localObservacionesProduccion ?? ''}
                                 onChange={handleObservacionesProduccionChange}
                                 disabled={loading}
                             />
