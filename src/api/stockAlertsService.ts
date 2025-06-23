@@ -1,10 +1,10 @@
+// src/api/stockAlertService.ts
 import axiosInstance from './axiosInstance';
 import type { StockAlert } from '../types/stock.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
 const API_URL = '/stock-alerts';
 
-// Un manejador de errores simplificado y reutilizable
 const handleError = (error: unknown, fallbackMessage: string): never => {
     if (typeof error === 'object' && error !== null && 'response' in error) {
         const responseError = error as { response?: { data?: ApiErrorResponseDTO } };
@@ -27,7 +27,6 @@ export const getActiveStockAlerts = async (): Promise<StockAlert[]> => {
 
 export const markAlertAsViewed = async (alertId: number): Promise<void> => {
   try {
-    // CORRECCIÓN: Cambiado de .put a .post para coincidir con el @PostMapping del backend
     await axiosInstance.post(`${API_URL}/${alertId}/view`);
   } catch (error: unknown) {
     handleError(error, 'Error desconocido al marcar la alerta como vista.');
@@ -36,14 +35,12 @@ export const markAlertAsViewed = async (alertId: number): Promise<void> => {
 
 export const markAlertAsResolved = async (alertId: number): Promise<void> => {
   try {
-    // CORRECCIÓN: Cambiado de .put a .post para coincidir con el @PostMapping del backend
     await axiosInstance.post(`${API_URL}/${alertId}/resolve`);
   } catch (error: unknown) {
     handleError(error, 'Error desconocido al resolver la alerta.');
   }
 };
 
-// --- Las funciones de actualizar umbral ya estaban bien ---
 export const updateInsumoThreshold = async (insumoId: number, newThreshold: number): Promise<string> => {
     try {
         const response = await axiosInstance.put<string>(`${API_URL}/threshold/insumo/${insumoId}`, {

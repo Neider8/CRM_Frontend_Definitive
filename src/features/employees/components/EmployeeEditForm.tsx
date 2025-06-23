@@ -38,7 +38,7 @@ const EmployeeEditForm: React.FC<EmployeeEditFormProps> = ({ employeeData }) => 
       nombreEmpleado: employeeData.nombreEmpleado || '',
       cargoEmpleado: employeeData.cargoEmpleado || null,
       areaEmpleado: employeeData.areaEmpleado || null,
-      salarioEmpleado: employeeData.salarioEmpleado ?? null, // Usar ?? para manejar 0
+      salarioEmpleado: employeeData.salarioEmpleado ?? null, 
       fechaContratacionEmpleado: employeeData.fechaContratacionEmpleado || null,
     }
   });

@@ -9,7 +9,7 @@ import type { EmployeeDetails } from '../../../types/employee.types';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const EmployeeEditPage: React.FC = () => {
-  const { employeeId: employeeIdParam } = useParams<{ employeeId: string }>(); // Cambiado de userId a employeeId
+  const { employeeId: employeeIdParam } = useParams<{ employeeId: string }>(); 
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 

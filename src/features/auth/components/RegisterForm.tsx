@@ -13,7 +13,6 @@ import {
   MenuItem,
   IconButton,
   InputAdornment,
-  // --- NUEVO: Imports para checkbox y diálogo ---
   FormControlLabel,
   Checkbox,
   Link,
@@ -47,7 +46,6 @@ const registerSchema = yup.object({
     .string()
     .required('El rol es requerido.')
     .oneOf(['Administrador', 'Gerente', 'Operario', 'Ventas'], 'Rol inválido.'),
-  // --- NUEVO: Campo de validación para términos ---
   terminos: yup
     .boolean()
     .oneOf([true], 'Debes aceptar los términos y condiciones para continuar.')
@@ -65,7 +63,6 @@ const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // --- NUEVO: Estado para controlar el diálogo ---
   const [openTermsDialog, setOpenTermsDialog] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -79,7 +76,6 @@ const RegisterForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
-    // --- NUEVO: Obtenemos 'setValue' y 'watch' del hook ---
     setValue,
     watch,
   } = useForm<RegisterFormInputs>({
@@ -89,17 +85,14 @@ const RegisterForm: React.FC = () => {
       contrasena: '',
       confirmarContrasena: '',
       rolUsuario: 'Ventas',
-      // --- NUEVO: Valor inicial para el checkbox ---
       terminos: false,
     },
   });
 
-  // --- NUEVO: Funciones para manejar el diálogo ---
   const handleOpenTermsDialog = () => setOpenTermsDialog(true);
   const handleCloseTermsDialog = () => setOpenTermsDialog(false);
 
   const handleAcceptTerms = () => {
-    // Usamos setValue para marcar el checkbox y activar la validación
     setValue('terminos', true, { shouldValidate: true });
     handleCloseTermsDialog();
   };
@@ -230,13 +223,11 @@ const RegisterForm: React.FC = () => {
             </MenuItem>
           ))}
         </TextField>
-
-        {/* --- NUEVO: Checkbox de Términos y Condiciones --- */}
         <FormControlLabel
           control={
             <Checkbox
               {...register('terminos')}
-              checked={watch('terminos')} // watch asegura que el UI refleje el estado del form
+              checked={watch('terminos')} 
               color="primary"
             />
           }
@@ -283,8 +274,6 @@ const RegisterForm: React.FC = () => {
           </RouterLink>
         </Typography>
       </Box>
-
-      {/* --- NUEVO: Diálogo emergente para los términos --- */}
       <Dialog
         open={openTermsDialog}
         onClose={handleCloseTermsDialog}

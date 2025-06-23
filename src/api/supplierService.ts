@@ -9,7 +9,7 @@ import type {
 } from '../types/supplier.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
-const API_URL = '/proveedores'; // Esta es la base para las rutas de este servicio
+const API_URL = '/proveedores';
 
 export const getAllSuppliers = async (params?: SupplierPageableRequest): Promise<PaginatedSuppliers> => {
   try {
@@ -23,7 +23,6 @@ export const getAllSuppliers = async (params?: SupplierPageableRequest): Promise
 
 export const getSupplierById = async (id: number): Promise<SupplierDetails> => {
   try {
-    // ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ ASÍ:
     const response = await axiosInstance.get<SupplierDetails>(`${API_URL}/${id}`);
     return response.data;
   } catch (error: any) {
@@ -34,7 +33,6 @@ export const getSupplierById = async (id: number): Promise<SupplierDetails> => {
 
 export const getSupplierByNit = async (nit: string): Promise<SupplierDetails> => {
   try {
-    // ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ ASÍ:
     const response = await axiosInstance.get<SupplierDetails>(`${API_URL}/nit/${nit}`);
     return response.data;
   } catch (error: any) {
@@ -55,7 +53,6 @@ export const createSupplier = async (payload: SupplierCreateRequest): Promise<Su
 
 export const updateSupplier = async (id: number, payload: SupplierUpdateRequest): Promise<SupplierDetails> => {
   try {
-    // ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ ASÍ:
     const response = await axiosInstance.put<SupplierDetails>(`${API_URL}/${id}`, payload);
     return response.data;
   } catch (error: any) {
@@ -66,7 +63,6 @@ export const updateSupplier = async (id: number, payload: SupplierUpdateRequest)
 
 export const deleteSupplier = async (id: number): Promise<void> => {
   try {
-    // ASEGÚRATE DE QUE ESTA LÍNEA ESTÉ ASÍ:
     await axiosInstance.delete(`${API_URL}/${id}`);
   } catch (error: any) {
     if (error.response && error.response.data) { throw error.response.data as ApiErrorResponseDTO; }

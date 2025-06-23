@@ -14,7 +14,6 @@ import ContactPageIcon from '@mui/icons-material/ContactPage';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
-import WorkIcon from '@mui/icons-material/Work';
 
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { getClientById, deleteClientContact } from '../../../api/clientService';
@@ -23,8 +22,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
-import ContactCreateModal from '../components/ContactCreateModal'; // Importar el modal de creación
-import ContactEditModal from '../components/ContactEditModal'; // Importar el modal de edición
+import ContactCreateModal from '../components/ContactCreateModal';
+import ContactEditModal from '../components/ContactEditModal';
 
 const ClientDetailPage: React.FC = () => {
   const { clientId: clientIdParam } = useParams<{ clientId: string }>();
@@ -39,8 +38,8 @@ const ClientDetailPage: React.FC = () => {
   const [openDeleteContactDialog, setOpenDeleteContactDialog] = useState(false);
   const [selectedContactToDelete, setSelectedContactToDelete] = useState<ContactDetails | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [openCreateContactModal, setOpenCreateContactModal] = useState(false); // Estado para el modal de creación
-  const [editingContact, setEditingContact] = useState<ContactDetails | null>(null); // Estado para el contacto a editar
+  const [openCreateContactModal, setOpenCreateContactModal] = useState(false);
+  const [editingContact, setEditingContact] = useState<ContactDetails | null>(null);
 
   const clientId = parseInt(clientIdParam || '', 10);
 
@@ -97,16 +96,16 @@ const ClientDetailPage: React.FC = () => {
   }
 
   const handleContactCreated = () => {
-    fetchClientData(); // Recargar los datos del cliente para actualizar la lista de contactos
+    fetchClientData();
   };
 
   const handleContactUpdated = () => {
-    fetchClientData(); // Recargar los datos del cliente para actualizar la lista
-    setEditingContact(null); // Cerrar el modal de edición (indirectamente)
+    fetchClientData();
+    setEditingContact(null);
   };
 
   const handleEditContactClick = (contact: ContactDetails) => {
-    setEditingContact(contact); // Establece el contacto a editar y abre el modal
+    setEditingContact(contact);
   };
 
   const canEditClient = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Ventas';
@@ -228,7 +227,6 @@ const ClientDetailPage: React.FC = () => {
                     canManageContacts && (
                       <>
                         <Tooltip title="Editar Contacto">
-                          {/* Actualizar onClick para abrir el modal de edición */}
                           <IconButton edge="end" aria-label="edit" sx={{mr:0.5}} onClick={() => handleEditContactClick(contact)}>
                             <EditIcon fontSize="small"/>
                           </IconButton>
@@ -282,10 +280,10 @@ const ClientDetailPage: React.FC = () => {
       )}
 
       {/* Modal para editar contacto */}
-      {editingContact && client && ( // Solo renderizar si hay un contacto para editar
+      {editingContact && client && (
         <ContactEditModal
-          open={!!editingContact} // El modal se abre si editingContact no es null
-          onClose={() => setEditingContact(null)} // Limpiar editingContact para cerrar
+          open={!!editingContact}
+          onClose={() => setEditingContact(null)}
           clientId={client.idCliente}
           contactData={editingContact}
           onContactUpdated={handleContactUpdated}

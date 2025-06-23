@@ -1,12 +1,12 @@
 import React from 'react';
-import { formatDistanceToNow } from 'date-fns'; // Para mostrar fechas relativas como "hace 5 minutos"
-import { es } from 'date-fns/locale'; // Para que el texto esté en español
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale'; // Para formato de fecha en español
 import type { StockAlert } from '../../types/stock.types';
 import { markAlertAsViewed } from '../../api/stockAlertsService';
 
 interface AlertsPanelProps {
-  alerts: StockAlert[];      // Recibe la lista completa de alertas
-  onAlertClick: () => void; // Función para actualizar el estado después de un clic
+  alerts: StockAlert[];
+  onAlertClick: () => void;
 }
 
 const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts, onAlertClick }) => {
@@ -14,15 +14,13 @@ const AlertsPanel: React.FC<AlertsPanelProps> = ({ alerts, onAlertClick }) => {
   const handleAlertClick = async (alertId: number) => {
     try {
       await markAlertAsViewed(alertId);
-      // Aquí podrías agregar navegación a la página del producto/insumo
-      console.log(`Alerta ${alertId} marcada como vista.`);
-      onAlertClick(); // Llama a la función del padre para que vuelva a cargar las alertas
+      // Notifica al componente padre para que actualice el estado y cierre el panel.
+      onAlertClick();
     } catch (error) {
       console.error("Error al marcar la alerta como vista:", error);
     }
   };
   
-  // Filtrar solo las alertas nuevas para mostrar
   const newAlerts = alerts.filter(alert => alert.estadoAlerta === 'Nueva');
 
   return (

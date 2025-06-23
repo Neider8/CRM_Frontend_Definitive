@@ -8,13 +8,12 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd'; // Icono para asociar/ver usuario
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { getAllEmployees, deleteEmployee } from '../../../api/employeeService'; // Ajusta la ruta si es necesario
-import type { EmployeePageableRequest, PaginatedEmployees, EmployeeDetails } from '../../../types/employee.types'; // Ajusta la ruta si es necesario
-import { useAuth } from '../../../contexts/AuthContext'; // Ajusta la ruta si es necesario
-// import { format } from 'date-fns'; // No se usa format en este archivo directamente, pero podría ser útil para fechas si se añaden.
-import ConfirmationDialog from '../../../components/common/ConfirmationDialog'; // Ajusta la ruta si es necesario
+import { getAllEmployees, deleteEmployee } from '../../../api/employeeService';
+import type { EmployeePageableRequest, PaginatedEmployees } from '../../../types/employee.types';
+import { useAuth } from '../../../contexts/AuthContext';
+import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
 
 const EmployeesListPage: React.FC = () => {
   const { user: currentUser } = useAuth();
@@ -33,16 +32,15 @@ const EmployeesListPage: React.FC = () => {
 
   const fetchEmployees = useCallback(async (currentPage: number, currentRowsPerPage: number) => {
     setLoading(true);
-    // setError(null); // Considera si quieres limpiar errores anteriores al reintentar.
     try {
       const params: EmployeePageableRequest = {
         page: currentPage,
         size: currentRowsPerPage,
-        sort: 'nombreEmpleado,asc', // o el criterio de ordenación que prefieras
+        sort: 'nombreEmpleado,asc',
       };
       const data = await getAllEmployees(params);
       setEmployeesPage(data);
-      setError(null); // Limpiar errores si la carga es exitosa
+      setError(null);
     } catch (err: any) {
       setError(err.message || 'Error al cargar empleados.');
       console.error("Error fetching employees:", err);
@@ -87,11 +85,11 @@ const EmployeesListPage: React.FC = () => {
         await deleteEmployee(selectedEmployeeIdToDelete);
         setOpenDeleteDialog(false);
         setSuccessMessage(`Empleado '${selectedEmployeeNameToDelete}' eliminado correctamente.`);
-        fetchEmployees(page, rowsPerPage); // Recargar la lista
+        fetchEmployees(page, rowsPerPage);
       } catch (err: any) {
         setError(err.message || `Error al eliminar el empleado '${selectedEmployeeNameToDelete}'.`);
         console.error("Error deleting employee:", err);
-        setOpenDeleteDialog(false); // Cerrar diálogo incluso si hay error
+        setOpenDeleteDialog(false);
       } finally {
         setSelectedEmployeeIdToDelete(null);
         setSelectedEmployeeNameToDelete('');
@@ -102,19 +100,19 @@ const EmployeesListPage: React.FC = () => {
 
   const handleCloseSnackbar = () => {
     setSuccessMessage(null);
-    setError(null); // También limpiar errores al cerrar el snackbar si es un error general
+    setError(null);
   };
 
   const canCreateEmployees = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
   const canEditEmployees = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
   const canDeleteEmployees = currentUser?.rolUsuario === 'Administrador';
-  const canViewEmployees = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente' || currentUser?.rolUsuario === 'Ventas' || currentUser?.rolUsuario === 'Operario'; // Ajusta según tus roles que pueden ver
+  const canViewEmployees = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente' || currentUser?.rolUsuario === 'Ventas' || currentUser?.rolUsuario === 'Operario';
 
-  if (loading && !employeesPage) { // Mostrar loading solo si no hay datos previos
+  if (loading && !employeesPage) {
     return <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress /></Box>;
   }
 
-  if (!canViewEmployees && !loading) { // Si ya terminó de cargar y no tiene permisos
+  if (!canViewEmployees && !loading) {
       return (
           <Container maxWidth="md">
               <Alert severity="error" sx={{mt: 2}}>No tienes permisos para ver la lista de empleados.</Alert>
@@ -122,7 +120,6 @@ const EmployeesListPage: React.FC = () => {
           </Container>
       );
   }
-
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden', p: { xs: 1, sm: 2 } }}>
@@ -144,12 +141,10 @@ const EmployeesListPage: React.FC = () => {
       </Box>
 
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={handleCloseSnackbar}>{error}</Alert>}
-      {/* Mostrar loading de forma más sutil si ya hay datos y se está recargando */}
       {loading && employeesPage && <Box sx={{ display: 'flex', justifyContent: 'center', my:2 }}><CircularProgress size={24} /></Box>}
 
-
       {!loading && !error && (!employeesPage || employeesPage.content.length === 0) ? (
-         <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron empleados.</Typography>
+          <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron empleados.</Typography>
       ) : employeesPage && employeesPage.content.length > 0 ? (
         <>
           <TableContainer>
@@ -183,7 +178,7 @@ const EmployeesListPage: React.FC = () => {
                             component={RouterLink}
                             to={`/usuarios/${employee.usuario.idUsuario}`}
                             clickable
-                            color="secondary" // O el color que prefieras
+                            color="secondary"
                             variant="outlined"
                           />
                         </Tooltip>
@@ -194,14 +189,9 @@ const EmployeesListPage: React.FC = () => {
                             label="No asociado"
                             size="small"
                             onClick={() => {
-                              // --- INICIO DEL CÓDIGO DE DIAGNÓSTICO ---
                               console.log('--- DIAGNÓSTICO DESDE EmployeesListPage ---');
                               console.log('ID del Empleado:', employee.idEmpleado);
                               console.log('Nombre Empleado en Frontend (antes de encodeURIComponent):', employee.nombreEmpleado);
-                              // Opcional: para ver todo el objeto empleado tal como está en el frontend:
-                              // console.log('Objeto completo del empleado en Frontend:', JSON.parse(JSON.stringify(employee)));
-                              // --- FIN DEL CÓDIGO DE DIAGNÓSTICO ---
-                              
                               navigate(`/usuarios/nuevo?idEmpleado=${employee.idEmpleado}&nombreEmpleado=${encodeURIComponent(employee.nombreEmpleado)}`);
                             }}
                             clickable

@@ -5,12 +5,19 @@ import type { ProductSummary } from './product.types';
 import type { InsumoSummary } from './supply.types';
 
 
+<<<<<<< HEAD
 // ==========================================
 // == TIPOS PARA INVENTARIO DE PRODUCTOS ==
 // ==========================================
 
 // Se renombró de 'InventarioProducto' para consistencia con los imports
 export interface ProductInventoryDetails {
+=======
+
+
+// INVENTARIO DE PRODUCTOS
+export interface InventarioProducto {
+>>>>>>> 2a49766616649f063a915b51d41bddd2ac0eb837
   idInventarioProducto: number;
   ubicacionInventario: string;
   producto: ProductSummary;

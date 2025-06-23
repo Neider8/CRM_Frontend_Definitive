@@ -4,13 +4,13 @@ import { Container, Typography, Box, IconButton, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EmployeeCreateForm from '../components/EmployeeCreateForm';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext'; // Para control de acceso
+import { useAuth } from '../../../contexts/AuthContext';
 
 const EmployeeCreatePage: React.FC = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
 
-  // Verificar permisos (Admin o Gerente según EmpleadoController)
+  // Lógica de autorización basada en rol (Admin o Gerente).
   const canCreate = currentUser?.rolUsuario === 'Administrador' || currentUser?.rolUsuario === 'Gerente';
 
   if (!canCreate) {
@@ -28,7 +28,7 @@ const EmployeeCreatePage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg"> {/* Un poco más ancho para formularios más grandes */}
+    <Container maxWidth="lg">
       <Box sx={{ my: 2, display: 'flex', alignItems: 'center' }}>
         <IconButton onClick={() => navigate(-1)} color="primary" sx={{ mr: 1 }} aria-label="Volver">
           <ArrowBackIcon />

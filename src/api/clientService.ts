@@ -6,16 +6,13 @@ import type {
   ClientUpdateRequest,
   PaginatedClients,
   ClientPageableRequest,
-  ContactCreateRequest, // Este es el tipo de 'payload' que viene del formulario
+  ContactCreateRequest,
   ContactDetails
-  // ContactoClienteResponseDTO // Podrías tener un tipo específico para la respuesta
 } from '../types/client.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
 const API_URL = '/clientes';
 
-// --- Tus otras funciones de cliente (getAllClients, getClientById, etc.) ---
-// (Asegúrate de que las URLs estén bien construidas con template literals como ya has notado)
 
 export const getAllClients = async (params?: ClientPageableRequest): Promise<PaginatedClients> => {
   try {
@@ -88,26 +85,21 @@ export const getContactsByClientId = async (idCliente: number): Promise<ContactD
   }
 };
 
-/**
- * Añade un nuevo contacto a un cliente específico.
- * El backend espera que el 'idCliente' esté presente DENTRO del payload.
- */
+// Añade un contacto a un cliente, inyectando `idCliente` en el payload para cumplir con la validación del backend.
 export const addContactToClient = async (
-  idCliente: number, // ID del cliente al que se asocia el contacto
-  contactFormData: ContactCreateRequest // Datos del formulario del contacto (sin idCliente)
-): Promise<ContactDetails> /* O el tipo de respuesta que devuelva tu backend, ej: ContactoClienteResponseDTO */ => {
-  
-  // 1. Preparamos el payload que SÍ incluye el idCliente, como espera el backend.
+  idCliente: number,
+  contactFormData: ContactCreateRequest
+): Promise<ContactDetails> => {
+
   const payloadParaBackend = {
-    ...contactFormData, // Copiamos los datos del formulario (nombreContacto, cargo, etc.)
-    idCliente: idCliente, // Añadimos el idCliente
+    ...contactFormData,
+    idCliente: idCliente,
   };
 
   try {
-    // 2. Enviamos la solicitud POST con el payload modificado.
     const response = await axiosInstance.post<ContactDetails>(
-      `${API_URL}/${idCliente}/contactos`, // URL del endpoint
-      payloadParaBackend // Este es el cuerpo de la solicitud que ahora incluye idCliente
+      `${API_URL}/${idCliente}/contactos`,
+      payloadParaBackend
     );
     return response.data;
   } catch (error: any) {
@@ -122,17 +114,13 @@ export const addContactToClient = async (
 export const updateClientContact = async (
   idCliente: number,
   idContacto: number,
-  contactFormData: ContactCreateRequest // Si la actualización también necesita idCliente en el body, se haría un ajuste similar aquí.
+  contactFormData: ContactCreateRequest
 ): Promise<ContactDetails> => {
   try {
-    // NOTA: Si tu endpoint de ACTUALIZACIÓN también requiere idCliente en el payload,
-    // deberías aplicar una lógica similar a la de addContactToClient:
-    // const payloadParaBackend = { ...contactFormData, idCliente: idCliente };
-    // y luego enviar payloadParaBackend en lugar de contactFormData.
-    // Por ahora, lo dejo como estaba, asumiendo que el error solo es en la creación.
+    // Nota: El payload de actualización podría requerir el `idCliente` al igual que la función de creación.
     const response = await axiosInstance.put<ContactDetails>(
       `${API_URL}/${idCliente}/contactos/${idContacto}`,
-      contactFormData // Este payload podría necesitar ajuste si la validación del backend lo requiere.
+      contactFormData
     );
     return response.data;
   } catch (error: any) {

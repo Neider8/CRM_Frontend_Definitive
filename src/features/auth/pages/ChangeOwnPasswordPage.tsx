@@ -1,9 +1,9 @@
 // src/features/auth/pages/ChangeOwnPasswordPage.tsx
 import React from 'react';
-import { Container, Typography, Box, IconButton, Paper, Button } from '@mui/material';
+import { Container, Typography, Box, IconButton, Paper } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-import ChangePasswordForm from '../../users/components/ChangePasswordForm'; // Reutilizamos el mismo formulario
+import ChangePasswordForm from '../../users/components/ChangePasswordForm';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const ChangeOwnPasswordPage: React.FC = () => {
@@ -11,14 +11,13 @@ const ChangeOwnPasswordPage: React.FC = () => {
   const { user: currentUser, logout } = useAuth();
 
   if (!currentUser) {
-    // Esto no debería pasar si la ruta está protegida por AuthGuard
+    // Guarda de seguridad: no debería ocurrir si la ruta está protegida.
     navigate('/login');
     return null;
   }
 
   const handleSuccess = () => {
-    // Considera si desloguear al usuario después de cambiar su propia contraseña
-    // para que inicie sesión con la nueva. Es una práctica común.
+    // Práctica de seguridad: forzar logout tras cambiar la contraseña.
     alert("Contraseña cambiada exitosamente. Por favor, inicie sesión de nuevo.");
     logout();
     navigate('/login');
@@ -34,13 +33,13 @@ const ChangeOwnPasswordPage: React.FC = () => {
           Cambiar Mi Contraseña
         </Typography>
       </Box>
-       <Paper elevation={3} sx={{p:3}}>
+        <Paper elevation={3} sx={{p:3}}>
         <ChangePasswordForm
           userId={currentUser.idUsuario}
           userName={currentUser.nombreUsuario}
-          isOwnPasswordChange={true} // El usuario cambia su propia contraseña
+          isOwnPasswordChange={true}
           onSuccess={handleSuccess}
-          onCancel={() => navigate(`/usuarios/${currentUser.idUsuario}`)} // Volver a su perfil
+          onCancel={() => navigate(`/usuarios/${currentUser.idUsuario}`)}
         />
       </Paper>
     </Container>

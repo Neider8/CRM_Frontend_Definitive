@@ -6,20 +6,17 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import SyncAltIcon from '@mui/icons-material/SyncAlt'; // Para registrar movimiento
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { getAllProductInventories } from '../../../api/productInventoryService';
-import type { ProductInventoryPageableRequest, PaginatedProductInventories } from '../../../types/inventory.types';
+import type { SupplyInventoryPageableRequest, PaginatedProductInventories } from '../../../types/inventory.types';
 import { useAuth } from '../../../contexts/AuthContext';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import { parseISO } from 'date-fns/parseISO';
 
-// IMPORTAR EL MODAL
 import ProductMovementCreateModal from '../components/ProductMovementCreateModal';
-// IMPORTAR useQueryClient para invalidar caché y refrescar datos (si estás usando React Query)
-// Si no estás usando React Query, puedes eliminar esta importación y las líneas que la usan.
+// Opcional: para invalidación de caché con React Query.
 import { useQueryClient } from '@tanstack/react-query';
 
 
@@ -32,18 +29,16 @@ const ProductInventoryListPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // ESTADOS PARA EL MODAL DE MOVIMIENTO
   const [isMovementModalOpen, setIsMovementModalOpen] = useState(false);
-  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any | null>(null); // Almacena el item completo para pasar props
+  const [selectedInventoryItem, setSelectedInventoryItem] = useState<any | null>(null);
 
-  // Inicializar useQueryClient (si estás usando React Query)
   const queryClient = useQueryClient();
 
   const fetchInventories = useCallback(async (currentPage: number, currentRowsPerPage: number) => {
     setLoading(true);
     setError(null);
     try {
-      const params: ProductInventoryPageableRequest = {
+      const params: SupplyInventoryPageableRequest = {
         page: currentPage,
         size: currentRowsPerPage,
         sort: 'producto.nombreProducto,asc',
@@ -69,30 +64,25 @@ const ProductInventoryListPage: React.FC = () => {
   };
 
   const handleViewDetails = (inventoryId: number) => {
-    navigate(`/inventario-productos/${inventoryId}`); // Ruta para ver detalles y movimientos
+    navigate(`/inventario-productos/${inventoryId}`);
   };
 
-  // NUEVA FUNCIÓN PARA ABRIR EL MODAL: ahora recibe el 'item' completo
   const handleOpenMovementModal = (item: any) => {
     setSelectedInventoryItem(item);
     setIsMovementModalOpen(true);
   };
 
-  // NUEVA FUNCIÓN PARA CERRAR EL MODAL Y REFRESCAR LA LISTA
   const handleCloseMovementModal = () => {
     setIsMovementModalOpen(false);
     setSelectedInventoryItem(null);
-    // Invalidar la caché para refrescar la lista de inventario después de un movimiento
-    // Si no estás usando React Query, esta línea no es necesaria.
+    // Invalida la caché de React Query para forzar un refetch de los datos.
     queryClient.invalidateQueries({ queryKey: ['productInventories'] });
-    fetchInventories(page, rowsPerPage); // Vuelve a cargar la lista para ver el cambio
+    fetchInventories(page, rowsPerPage);
   };
 
-
-  // Permisos según InventarioProductoController
   const canManageInventory = currentUser?.rolUsuario === 'Administrador' ||
-                             currentUser?.rolUsuario === 'Gerente' ||
-                             currentUser?.rolUsuario === 'Operario';
+                               currentUser?.rolUsuario === 'Gerente' ||
+                               currentUser?.rolUsuario === 'Operario';
   const canViewInventory = canManageInventory || currentUser?.rolUsuario === 'Ventas';
 
 
@@ -118,7 +108,7 @@ const ProductInventoryListPage: React.FC = () => {
             color="primary"
             startIcon={<AddIcon />}
             component={RouterLink}
-            to="/inventario-productos/nuevo" // Ruta para crear un nuevo registro de inventario (producto-ubicación)
+            to="/inventario-productos/nuevo"
           >
             Nuevo Registro Inventario
           </Button>
@@ -164,9 +154,8 @@ const ProductInventoryListPage: React.FC = () => {
                       </Tooltip>
                       {canManageInventory && (
                         <Tooltip title="Registrar Movimiento">
-                          {/* CAMBIO CLAVE AQUÍ: Llama a handleOpenMovementModal y pasa el item completo */}
                           <IconButton onClick={() => handleOpenMovementModal(item)} color="secondary" size="small">
-                            <SyncAltIcon /> {/* Icono de flechas moradas */}
+                            <SyncAltIcon />
                           </IconButton>
                         </Tooltip>
                       )}
@@ -192,16 +181,15 @@ const ProductInventoryListPage: React.FC = () => {
           !loading && !error && <Typography sx={{mt: 2, textAlign: 'center'}}>No se encontraron registros de inventario de productos.</Typography>
       )}
 
-      {/* RENDERIZAR EL MODAL AQUÍ: Solo si isMovementModalOpen es true y hay un item seleccionado */}
       {isMovementModalOpen && selectedInventoryItem && (
         <ProductMovementCreateModal
           open={isMovementModalOpen}
-          onClose={handleCloseMovementModal} // Pasa la función para cerrar el modal
+          onClose={handleCloseMovementModal}
           inventoryId={selectedInventoryItem.idInventarioProducto}
           productName={selectedInventoryItem.producto.nombreProducto}
           location={selectedInventoryItem.ubicacionInventario}
           currentStock={selectedInventoryItem.cantidadStock}
-          onMovementRegistered={handleCloseMovementModal} // El callback que se llama cuando el movimiento es exitoso (cierra el modal y refresca la lista)
+          onMovementRegistered={handleCloseMovementModal}
         />
       )}
     </Paper>

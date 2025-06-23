@@ -116,7 +116,7 @@ const EmployeeCreateForm: React.FC = () => {
           fullWidth
           id="numeroDocumento"
           label="Número de Documento"
-          autoFocus // Añadido autoFocus aquí
+          autoFocus 
           {...register('numeroDocumento')}
           error={!!errors.numeroDocumento}
           helperText={errors.numeroDocumento?.message}

@@ -1,13 +1,13 @@
 // src/api/permissionService.ts
 import axiosInstance from './axiosInstance';
-import type { PermisoResponseDTO, PermisoRequest } from '../types/permission.types'; // Asegúrate que PermisoRequest esté aquí
+import type { PermisoResponseDTO, PermisoRequest } from '../types/permission.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
 const API_URL = '/permisos';
 
 export const getAllPermissions = async (): Promise<PermisoResponseDTO[]> => {
   try {
-    // El backend devuelve List<PermisoResponseDTO>, no paginado
+    // Nota: Este endpoint devuelve la lista completa de permisos, no es paginado.
     const response = await axiosInstance.get<PermisoResponseDTO[]>(API_URL);
     return response.data;
   } catch (error: any) {

@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Container, Typography, Box, CircularProgress, Alert, Paper, Button,
   Divider, IconButton, Tooltip, Chip, Link as MuiLink, Snackbar
-} from '@mui/material'; // Grid ya no es necesario aquí directamente
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';

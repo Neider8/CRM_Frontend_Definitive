@@ -9,12 +9,9 @@ import type {
 } from '../types/employee.types';
 import type { ApiErrorResponseDTO } from '../types/error.types';
 
-const API_URL = '/empleados'; // Base URL para los endpoints de empleados
+const API_URL = '/empleados';
 
-/**
- * Obtiene una lista paginada de todos los empleados.
- * Requiere rol ADMINISTRADOR, GERENTE o permiso PERMISO_VER_EMPLEADOS.
- */
+// Requiere: ROL_ADMINISTRADOR, ROL_GERENTE o PERMISO_VER_EMPLEADOS.
 export const getAllEmployees = async (params?: EmployeePageableRequest): Promise<PaginatedEmployees> => {
   try {
     const response = await axiosInstance.get<PaginatedEmployees>(API_URL, { params });
@@ -27,10 +24,7 @@ export const getAllEmployees = async (params?: EmployeePageableRequest): Promise
   }
 };
 
-/**
- * Obtiene un empleado por su ID.
- * Accesible por Admin, Gerente, con permiso PERMISO_VER_EMPLEADOS, o el propio usuario si está vinculado al empleado.
- */
+// Requiere: ROL_ADMINISTRADOR, ROL_GERENTE, PERMISO_VER_EMPLEADOS, o ser el mismo usuario.
 export const getEmployeeById = async (id: number): Promise<EmployeeDetails> => {
   try {
     const response = await axiosInstance.get<EmployeeDetails>(`${API_URL}/${id}`);
@@ -43,10 +37,7 @@ export const getEmployeeById = async (id: number): Promise<EmployeeDetails> => {
   }
 };
 
-/**
- * Obtiene un empleado por su número de documento.
- * Requiere rol ADMINISTRADOR, GERENTE o permiso PERMISO_VER_EMPLEADOS.
- */
+// Requiere: ROL_ADMINISTRADOR, ROL_GERENTE o PERMISO_VER_EMPLEADOS.
 export const getEmployeeByDocumentNumber = async (numeroDocumento: string): Promise<EmployeeDetails> => {
   try {
     const response = await axiosInstance.get<EmployeeDetails>(`${API_URL}/documento/${numeroDocumento}`);
@@ -59,11 +50,7 @@ export const getEmployeeByDocumentNumber = async (numeroDocumento: string): Prom
   }
 };
 
-
-/**
- * Crea un nuevo empleado.
- * Requiere rol ADMINISTRADOR, GERENTE o permiso PERMISO_CREAR_EMPLEADOS.
- */
+// Requiere: ROL_ADMINISTRADOR, ROL_GERENTE o PERMISO_CREAR_EMPLEADOS.
 export const createEmployee = async (payload: EmployeeCreateRequest): Promise<EmployeeDetails> => {
   try {
     const response = await axiosInstance.post<EmployeeDetails>(API_URL, payload);
@@ -76,10 +63,7 @@ export const createEmployee = async (payload: EmployeeCreateRequest): Promise<Em
   }
 };
 
-/**
- * Actualiza la información de un empleado existente.
- * Requiere rol ADMINISTRADOR, GERENTE o permiso PERMISO_EDITAR_EMPLEADOS.
- */
+// Requiere: ROL_ADMINISTRADOR, ROL_GERENTE o PERMISO_EDITAR_EMPLEADOS.
 export const updateEmployee = async (id: number, payload: EmployeeUpdateRequest): Promise<EmployeeDetails> => {
   try {
     const response = await axiosInstance.put<EmployeeDetails>(`${API_URL}/${id}`, payload);
@@ -92,10 +76,7 @@ export const updateEmployee = async (id: number, payload: EmployeeUpdateRequest)
   }
 };
 
-/**
- * Elimina un empleado por su ID.
- * Requiere rol ADMINISTRADOR o permiso PERMISO_ELIMINAR_EMPLEADOS.
- */
+// Requiere: ROL_ADMINISTRADOR o PERMISO_ELIMINAR_EMPLEADOS.
 export const deleteEmployee = async (id: number): Promise<void> => {
   try {
     await axiosInstance.delete(`${API_URL}/${id}`);

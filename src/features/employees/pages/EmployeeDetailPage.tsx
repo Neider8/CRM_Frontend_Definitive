@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// src/features/employees/pages/EmployeeDetailPage.tsx
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Container, Typography, Box, CircularProgress, Alert, Paper, Avatar, Button,
   Divider, Chip, IconButton, Tooltip, Stack
@@ -11,12 +12,12 @@ import PersonIcon from '@mui/icons-material/Person';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
-import { getEmployeeById, deleteEmployee } from '../../../api/employeeService'; // Asegúrate que la ruta sea correcta
-import type { EmployeeDetails } from '../../../types/employee.types'; // Asegúrate que la ruta sea correcta
-import { useAuth } from '../../../contexts/AuthContext'; // Asegúrate que la ruta sea correcta
+import { getEmployeeById, deleteEmployee } from '../../../api/employeeService';
+import type { EmployeeDetails } from '../../../types/employee.types';
+import { useAuth } from '../../../contexts/AuthContext';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import ConfirmationDialog from '../../../components/common/ConfirmationDialog'; // Asegúrate que la ruta sea correcta
+import ConfirmationDialog from '../../../components/common/ConfirmationDialog';
 
 const EmployeeDetailPage: React.FC = () => {
   const { employeeId: employeeIdParam } = useParams<{ employeeId: string }>();
@@ -39,9 +40,6 @@ const EmployeeDetailPage: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-          // No necesitas la variable canViewThisEmployee aquí si solo la usas para decidir si fetchear o no.
-          // La lógica de si se puede ver o no usualmente va en el backend o antes de renderizar.
-          // Si getEmployeeById ya maneja permisos (ej. lanzando error si no autorizado), está bien.
           const data = await getEmployeeById(employeeId);
           setEmployee(data);
         } catch (err: any) {
@@ -56,7 +54,7 @@ const EmployeeDetailPage: React.FC = () => {
       setError("ID de empleado inválido o no proporcionado.");
       setLoading(false);
     }
-  }, [employeeIdParam, employeeId]); // Removido currentUser de dependencias si no se usa directamente en el efecto para la lógica de fetch.
+  }, [employeeIdParam, employeeId]);
 
   const handleDeleteClick = () => {
     setOpenDeleteDialog(true);
@@ -97,7 +95,6 @@ const EmployeeDetailPage: React.FC = () => {
   }
 
   if (!employee) {
-    // Este chequeo es importante. Si employee es null después de cargar, mostramos mensaje.
     return (
         <Container maxWidth="md">
             <Alert severity="warning" sx={{ mt: 4 }}>
@@ -107,9 +104,6 @@ const EmployeeDetailPage: React.FC = () => {
         </Container>
     );
   }
-
-  // Si llegamos aquí, !employee es falso, así que employee no es null.
-  // TypeScript debería entenderlo, pero si hay dudas, puedes usar `employee!` si estás seguro.
 
   return (
     <Container maxWidth="lg">
@@ -158,7 +152,7 @@ const EmployeeDetailPage: React.FC = () => {
               <PersonIcon fontSize="inherit" />
             </Avatar>
             <Typography variant="h5" component="h2" gutterBottom>
-              {employee.nombreEmpleado} {/* Se muestra el nombre del empleado */}
+              {employee.nombreEmpleado}
             </Typography>
             <Chip label={`ID: ${employee.idEmpleado}`} size="small" sx={{ mb: 1 }} />
             <Typography variant="body1" color="text.secondary">
@@ -175,7 +169,6 @@ const EmployeeDetailPage: React.FC = () => {
             </Typography>
             <Divider sx={{ mb: 2 }} />
             <Stack spacing={1.5}>
-              {/* ... otros campos del empleado ... */}
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ width: '40%' }}>Tipo Documento:</Typography>
                 <Typography variant="body1" sx={{ width: '60%' }}>{employee.tipoDocumento}</Typography>
@@ -206,7 +199,6 @@ const EmployeeDetailPage: React.FC = () => {
 
             {employee.usuario && (
               <Box sx={{ mt: 3 }}>
-                {/* ... sección de usuario asociado ... */}
                 <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                   <AccountCircleIcon sx={{ mr: 1 }} color="action" /> Cuenta de Usuario Asociada
                 </Typography>
@@ -245,7 +237,6 @@ const EmployeeDetailPage: React.FC = () => {
                     size="small"
                     startIcon={<AssignmentIndIcon />}
                     onClick={() => {
-                      // AQUÍ ESTÁ EL CAMBIO PARA DIAGNÓSTICO:
                       console.log('Valor de employee.nombreEmpleado ANTES de navegar:', employee.nombreEmpleado);
                       navigate(`/usuarios/nuevo?idEmpleado=${employee.idEmpleado}&nombreEmpleado=${encodeURIComponent(employee.nombreEmpleado)}`);
                     }}

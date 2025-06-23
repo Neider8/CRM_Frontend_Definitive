@@ -1,5 +1,5 @@
 import styles from './LoginPage.module.css';
-import { LoginForm } from '../components/LoginForm'; // Importa el formulario inteligente
+import { LoginForm } from '../components/LoginForm'; 
 import logo from '../../../assets/logo.png';
 
 const LoginPage = () => {
